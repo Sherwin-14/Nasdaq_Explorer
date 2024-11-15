@@ -35,6 +35,8 @@ with tab1:
         # Convert index to datetime
         df.index = pd.to_datetime(df.index)
 
+        st.session_state.df = df
+
         return df
 
     def validate_data(df):
