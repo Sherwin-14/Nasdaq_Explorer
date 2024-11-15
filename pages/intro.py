@@ -12,8 +12,10 @@ st.title("Choose Stock Data To Analyze ")
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Basic Data Exploration", "Time Series Decomposition", "Exponential Smoothing","ACF and PACF Plots", "Stationarity Tests"])
 
 with tab1:
+    
+    tickers_df = pd.read_csv('/home/sherwin/Projects/time_series_prediction/nasdaq_tickers.csv')
 
-    stock_tickers = ["AAPL", "GOOG", "MSFT", "AMZN", "META", "TSLA", "NFLX", "BABA", "V", "JPM"]
+    stock_tickers = tickers_df['Symbol'].tolist()
 
     # Create a selectbox to select a stock ticker symbol
     selected_ticker = st.selectbox("Select a stock ticker symbol", stock_tickers)
