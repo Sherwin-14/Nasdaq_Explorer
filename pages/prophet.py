@@ -31,10 +31,10 @@ except Exception as e:
 st.subheader("Forecast Data")
 st.dataframe(forecast.tail().style.set_table_styles([{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}]).background_gradient(cmap='Blues'), use_container_width=True)
 
-
-st.subheader("Forecast Data With Predicitions For The Coming Years")
-fig1  = plot_plotly(m, forecast)
-st.plotly_chart(fig1)
+with st.container():
+    st.subheader("Forecast Data With Predicitions For The Coming Years")
+    fig1  = plot_plotly(m, forecast)
+    st.plotly_chart(fig1)
 
 
 st.subheader('Forecast Components')
