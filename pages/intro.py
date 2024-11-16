@@ -159,16 +159,20 @@ with tab3:
     st.subheader("Stationarity Tests")
 
     def check_stationarity(df, method='ADF'):
-        if method == 'ADF':
-            clean_df = df['Close'].dropna()
-            result = adfuller(clean_df)
+         if method == 'ADF':
+            clean_df = df[['Date','Close']].dropna()
+            original_dates = clean_df['Date']
+            result = adfuller(clean_df['Close'],autolag='AIC')
             statistic, p_value, used_lag, n_obs, critical_values, icbest = result
             diff_count = 0
             print(p_value)
             while p_value > 0.05:
                 st.warning(f'The series is not stationary after {diff_count} differences. Making it stationary...')
-                clean_df = clean_df.diff().dropna()
-                result = adfuller(clean_df)
+                clean_df['Close'] = clean_df['Close'].diff()
+                print(clean_df.isna().sum())
+                clean_df = clean_df.dropna()
+                print(clean_df.isna().sum())
+                result = adfuller(clean_df['Close'], autolag = 'AIC')
                 statistic, p_value, used_lag, n_obs, critical_values, icbest = result
                 diff_count += 1
 
@@ -186,10 +190,16 @@ with tab3:
 
             st.write(result_summary)
 
+            print(clean_df.shape)
+
+            stationary_df = pd.DataFrame({ 'Date': original_dates, 'Close': clean_df['Close'] }) 
+
+            print(stationary_df)
+
             # Download the stationary data
             st.download_button(
                 label="Download Stationary Data",
-                data=clean_df.to_csv(index=False),
+                data=stationary_df.to_csv(index=False),
                 file_name="stationary_data.csv",
                 mime="text/csv",
             )
@@ -207,7 +217,9 @@ with tab4:
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
+        df = df.dropna()
         temp_session_state = df
+        st.write(df)
 
         # Generate ACF and PACF plots
         st.subheader('ACF and PACF Plots')

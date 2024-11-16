@@ -10,6 +10,7 @@ import yfinance as yf
 from datetime import date
 
 
+
 pages = {
     "Home": [
         st.Page("pages/home.py", title="Home", icon="🔥"),
