@@ -9,7 +9,7 @@ from statsmodels.tsa.api import SimpleExpSmoothing, Holt, ExponentialSmoothing
 
 st.title("Choose Stock Data To Analyze ")
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Basic Data Exploration", "Time Series Decomposition", "Exponential Smoothing","ACF and PACF Plots", "Stationarity Tests"])
+tab1, tab2, tab3, tab4 = st.tabs(["Basic Data Exploration", "Time Series Decomposition", "Stationarity Tests" ,"ACF and PACF Plots" ])
 
 with tab1:
     
@@ -30,10 +30,15 @@ with tab1:
 
         # Create a dataframe with column names
         df = pd.DataFrame(data)
-        df.columns = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
+        df = df.reset_index()
+        df.columns = ['Date','Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
+
+        df.rename(columns = {'index': 'Date'}, inplace=True)
+
+        print(df)
 
         # Convert index to datetime
-        df.index = pd.to_datetime(df.index)
+        df['Date'] = pd.to_datetime(df['Date'])
 
         st.session_state.df = df
 
@@ -55,13 +60,13 @@ with tab1:
         else:
             status_messages.append("No duplicate rows detected.")
 
-        expected_dtypes = {
+        expected_dtypes = {   
         'Open': 'float64',
         'High': 'float64',
         'Low': 'float64',
         'Close': 'float64',
         'Adj Close': 'float64',
-        'Volume': 'int64'
+        'Volume': 'float64'
         }
 
         incorrect_dtypes = []
@@ -109,7 +114,9 @@ with tab1:
         # Display graph with x-range slider
         with st.container():
             st.subheader("Comparing The Prices Up Untill Now")
-            fig = px.line(df, x=df.index, y=['Open', 'High', 'Close','Low'])
+            df = df.reset_index()
+            df_long = df.melt(id_vars = 'Date', value_vars=['Open', 'High', 'Low', 'Close'], var_name = 'Variable', value_name='Value')
+            fig = px.line(df_long, x = 'Date', y='Value', color='Variable')
             fig.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
             st.plotly_chart(fig, use_container_width=True)             
 
@@ -149,7 +156,46 @@ with tab2:
 
 with tab3:
 
-    smoothing_type = st.multiselect(':orange[Chose Smoothing Type]',options=['Single', 'Double', 'Triple'], default=['Single'])
+    st.subheader("Stationarity Tests")
+
+    def check_stationarity(df, method='ADF'):
+        if method == 'ADF':
+            clean_df = df['Close'].dropna()
+            result = adfuller(clean_df)
+            statistic, p_value, used_lag, n_obs, critical_values, icbest = result
+            diff_count = 0
+            print(p_value)
+            while p_value > 0.05:
+                st.warning(f'The series is not stationary after {diff_count} differences. Making it stationary...')
+                clean_df = clean_df.diff().dropna()
+                result = adfuller(clean_df)
+                statistic, p_value, used_lag, n_obs, critical_values, icbest = result
+                diff_count += 1
+
+            st.success(f'The series is now stationary after {diff_count} differences.')
+
+            result_summary = pd.DataFrame({
+                'Test': ['ADF Statistic'],
+                'Value': [statistic],
+                'p-value': [p_value],
+                'Used Lag': [used_lag],
+                'Number of Observations': [n_obs],
+                'Critical Values': [critical_values],
+                'IC Best': [icbest]
+            })
+
+            st.write(result_summary)
+
+            # Download the stationary data
+            st.download_button(
+                label="Download Stationary Data",
+                data=clean_df.to_csv(index=False),
+                file_name="stationary_data.csv",
+                mime="text/csv",
+            )
+
+    check_stationarity(st.session_state.df) 
+
      
 with tab4:
 
@@ -157,17 +203,19 @@ with tab4:
 
     lags = st.slider('Choose the number of lags', min_value=1, max_value=50, value=20)
 
-    show_arplots = st.toggle("Show ACF and PACF plots")
+    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
 
-    if show_arplots:
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        temp_session_state = df
+
+        # Generate ACF and PACF plots
+        st.subheader('ACF and PACF Plots')
         fig, axes = plt.subplots(2, 1, figsize=(10, 8))
-        plot_acf(st.session_state.df['Close'], ax=axes[0], lags=lags)
-        plot_pacf(st.session_state.df['Close'], ax=axes[1], lags=lags)
+        plot_acf(temp_session_state['Close'], ax=axes[0], lags=lags)
+        plot_pacf(temp_session_state['Close'], ax=axes[1], lags=lags)
         st.pyplot(fig)
 
-
-with tab5:
-
-    st.subheader('Stationarity Tests') 
+    
 
 
