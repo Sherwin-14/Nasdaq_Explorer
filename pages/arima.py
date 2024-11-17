@@ -134,7 +134,7 @@ with tab2:
                     return model_file
 
                 model_file = get_model_file()
-                st.download_button("Download the model with the best set of parameters", model_file, file_name="arima_model.pkl")
+                st.download_button("Download The Model", model_file, file_name="arima_model.pkl")
             
             
 
