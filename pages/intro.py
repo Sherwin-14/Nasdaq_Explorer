@@ -5,7 +5,6 @@ from datetime import date
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.api import SimpleExpSmoothing, Holt, ExponentialSmoothing
 
 st.title("Choose Stock Data To Analyze ")
 
