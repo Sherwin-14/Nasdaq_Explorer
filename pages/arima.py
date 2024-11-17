@@ -93,32 +93,14 @@ with tab2:
                 n_splits = 5 
                 tscv = TimeSeriesSplit(n_splits=n_splits)
 
-                metrics = []
-                rmse_metrics = []
-
                 for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
                     train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
                     model = ARIMA(train_df['Close'], order=(1, 0, 0))
                     model_fit = model.fit() # Generate the forecast data 
                     forecast = model_fit.forecast(steps=len(test_df))
                     forecast = forecast.dropna() 
-                    test_df = test_df.dropna() # Check if the lengths of forecast and test_df match 
-                    # Print forecast and test data for debugging
-                    st.write(f"Fold {fold} - Forecast: {forecast.values}") 
-                    st.write(f"Fold {fold} - Test Data: {test_df.values}")
-                    if len(forecast) == len(test_df): # Calculate validation metrics (e.g., Mean Absolute Error)
-                         mae = np.mean(np.abs(forecast - test_df['Close'])) 
-                         rmse = np.sqrt(np.mean((forecast - test_df)**2))
-                         rmse_metrics.append(rmse)
-                         metrics.append(mae) 
-                         st.write(f"Fold {fold}: MAE = {mae:.2f}, RMSE = {rmse:.2f}")
-                    else: 
-                        st.write(f"Length mismatch: forecast={len(forecast)}, test_df={len(test_df)}")
+                    test_df = test_df.dropna() 
 
-                mean_mae = np.mean(metrics) if metrics else np.nan
-
-                st.subheader("Time Series Cross-Validation Results") 
-                st.write(f"Mean Absolute Error (MAE) across {n_splits} folds: {mean_mae:.2f}") # Train the final model on the entire dataset 
                 final_model = ARIMA(df['Close'], order=(p, d, q)) 
                 final_model_fit = final_model.fit()    
 
@@ -136,7 +118,8 @@ with tab2:
 
                 fig = go.Figure()
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
-                fig.update_layout(title='Forecasted data performance over next 30 days ', xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
+                st.subheader("ARIMA Model Forecast and Mean Comparison")
+                fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
                 fig.update_xaxes(showgrid=True) 
                 fig.update_yaxes(showgrid=True)  
