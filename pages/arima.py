@@ -8,12 +8,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import TimeSeriesSplit
 from statsmodels.tsa.arima.model import ARIMA
 
-
 st.title("Create an ARIMA Based Model")
 
 tab1, tab2 = st.tabs(["Best Model Parameters", "Optimal Model"])
 
 with tab1:
+
     st.subheader("Upload a file for creation of arima model")
     uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"])
 
@@ -67,6 +67,7 @@ with tab1:
         p, d, q = st.session_state.pdq_values    
 
 with tab2:
+
     if st.session_state.pdq_values is not None:
         p, d, q = st.session_state.pdq_values   
         st.subheader("Upload the same file for modelling")
@@ -122,7 +123,6 @@ with tab2:
                 fig.update_yaxes(showgrid=True)  
                 st.plotly_chart(fig)
 
-                # Add a download button for the model
                 @st.cache_resource
                 def get_model_file():
                     model_file = "arima_model.pkl"
