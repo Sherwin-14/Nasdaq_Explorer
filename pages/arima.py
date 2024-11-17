@@ -1,10 +1,7 @@
-import extra_streamlit_components as stx
 import pickle
 import plotly.graph_objects as go
 
-
 from app import *
-
 from pmdarima import auto_arima
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -72,7 +69,7 @@ with tab1:
 with tab2:
     if st.session_state.pdq_values is not None:
         p, d, q = st.session_state.pdq_values   
-        st.subheader("Upload a file for creation of arima model")
+        st.subheader("Upload the same file for modelling")
         uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="2")
 
         if uplodaded_data is not None:
@@ -81,7 +78,7 @@ with tab2:
             st.subheader("Data after preprocessing and stationarity check")
             st.dataframe(df.sample(5),use_container_width = True)
 
-            st.warning("Before clicking the button below make sure that you have identified best set of paramerts from previous tab.")
+            st.warning("Before clicking the button below make sure that you have identified best set of parameters from previous tab.")
 
             if st.button("Start Processing") :
 
@@ -135,7 +132,6 @@ with tab2:
 
                 model_file = get_model_file()
                 st.download_button("Download The Model", model_file, file_name="arima_model.pkl")
-            
-            
+
 
                 

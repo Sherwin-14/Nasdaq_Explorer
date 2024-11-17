@@ -18,7 +18,7 @@ pages = {
     ],
 
     "Resources": [
-        st.Page("pages/arima.py", title="ARIMA Modelling", icon="✨"),
+        st.Page("pages/arima.py", title="ARIMA Modelling", icon="📊"),
         st.Page("pages/prophet.py", title="Prophet", icon="🛍️"),
         #st.Page("pages/prices_and_brands_analysis.py", title="Prices and Brands Analysis", icon="💸"),
         #st.Page("pages/time_distribution_analysis.py", title="Time Distribution Analysis", icon="⏰"),
