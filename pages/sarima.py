@@ -17,7 +17,9 @@ tab1, tab2 = st.tabs(["Best Model Parameters", "Optimal Model"])
 with tab1:
 
     st.subheader("Upload a file for creation of sarima model")
-    uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"])
+    uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "3")
+
+    st.session_state.pdqs_values = None
 
     if uplodaded_data is not None:
 
@@ -52,6 +54,24 @@ with tab1:
              else: 
                 return (True, True, True, True, True, True, True)
              
-        p, d, q, P, D, Q, s = run_sarima(df)
+        p, d, q, P, D, Q, s = run_sarima(df)  
+
+with tab2:
+      if st.session_state.pdqs_values is not None:
+            p, d, q, P, D, Q, S = st.session_state.pdqs_values 
+            print(p,d,q,P,Q,D,S)
+            st.subheader("Upload the same file for modelling")
+            uploaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="4")
+            print(uploaded_data) 
+
+            if uploaded_data is not None:
+
+                df = pd.read_csv(uploaded_data, parse_dates=['Date'])
+                print(df)
+                st.subheader("Data after preprocessing and stationarity check")
+                st.dataframe(df.sample(5), use_container_width=True)
+
+                st.warning("Before clicking the button below make sure that you have identified best set of parameters from previous tab.")
+
 
 

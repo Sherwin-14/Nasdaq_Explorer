@@ -8,6 +8,8 @@ from pages.intro import *
 
 st.title("Forecasting with FB Prophet")
 
+st.warning("Please choose the appropriate stock in the Choose Stock To Analzye section before attempting to download the model.")
+
 st.subheader("Raw Data")
 
 st.dataframe(st.session_state.df.head(),use_container_width = True)
