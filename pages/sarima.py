@@ -3,6 +3,7 @@ import numpy as np
 import streamlit as st 
 import plotly.graph_objects as go 
 import pickle
+import streamlit_antd_components as sac
 
 from app import *
 from pmdarima import auto_arima
@@ -16,7 +17,7 @@ tab1, tab2 = st.tabs(["Best Model Parameters", "Optimal Model"])
 
 with tab1:
 
-    st.subheader("Upload a file for creation of arima model")
+    st.subheader("Upload a file for creation of sarima model")
     uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"])
 
     if uplodaded_data is not None:
@@ -37,10 +38,15 @@ with tab1:
                 P, D, Q, s = model.seasonal_order
 
                 if p == 0 and q == 0 and d == 0: 
-                    st.markdown(""" #### Model order is (0,0,0). This may indicate that the data is a simple random walk. Try to collect more data or use a different model selection method. """) 
+                    sac.result(label ='', description = 'This suggests that the data might be white noise or random walk. Please select any other dataset or add more data to current one!',status = 500 )
                     return (p, d, q, P, D, Q, s)
                 
-                st.markdown(f""" #### Result : The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]}) """) 
+                sac.result(
+
+                    label='Result',
+                    description =f'The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]})',
+                    status='success', icon = sac.BsIcon(name='house', size = 50, color=None)
+                )
                 st.session_state.pdq_values = (p, d, q, P, D, Q, s) 
                 return (p, d, q, P, D, Q, s)
              
