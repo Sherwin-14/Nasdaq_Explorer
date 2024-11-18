@@ -1,5 +1,6 @@
 import pickle
 import plotly.graph_objects as go
+import streamlit_antd_components as sac
 
 from app import *
 from pmdarima import auto_arima
@@ -42,15 +43,16 @@ with tab1:
                 p, d, q = model.order
 
                 if p == 0 and q == 0 and d == 0:
-                    st.markdown("""
-                    #### Model order is (0,0,0). This may indicate that the data is a simple random walk.
-                    Try to collect more data or use a different model selection method.
-                    """)  
+                     sac.result(label ='', description = 'This suggests that the data might be white noise or random walk. Please select any other dataset or add more data to current one!',status = 500)
+                     return (p,d,q)
 
-                    return (p,d,q)
+                sac.result(
 
-                st.markdown(f""" #### Result : The best arima model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) """)
-               
+                    label='Sucess',
+                    description =f'The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]})',
+                    status='success', icon = sac.BsIcon(name='house', size = 50, color=None)
+                )
+
                 st.session_state.pdq_values = (p, d, q)
 
                 return (p,d,q)   

@@ -1,10 +1,12 @@
+import pickle
+
 from app import *
 from prophet import Prophet
 from prophet.plot import plot_plotly
 from pages.intro import *
 
 
-st.title("Model your data with FB Prophet")
+st.title("Forecasting with FB Prophet")
 
 st.subheader("Raw Data")
 
@@ -25,6 +27,7 @@ try:
     future = m.make_future_dataframe(periods = period)
     forecast = m.predict(future) 
     print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']])
+    model_bytes = pickle.dumps(m)
 except Exception as e: 
     st.write(f"Error: {e}" )  
 
@@ -39,4 +42,12 @@ with st.container():
 
 st.subheader('Forecast Components')
 fig2 = m.plot_components(forecast)
-st.write(fig2)    
+st.write(fig2)   
+
+st.download_button(
+            label = "Download The FB Prophet Model",
+            data=model_bytes,
+            file_name="prophet_model.pkl",
+            mime="application/octet-stream"
+)
+

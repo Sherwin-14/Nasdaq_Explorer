@@ -2,14 +2,13 @@ import pandas as pd
 import numpy as np 
 import streamlit as st 
 import plotly.graph_objects as go 
-import pickle
 import streamlit_antd_components as sac
+import pickle
 
 from app import *
 from pmdarima import auto_arima
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.model_selection import train_test_split, TimeSeriesSplit 
-import pickle
 
 st.title("Create SARIMA Model")
 
@@ -47,11 +46,12 @@ with tab1:
                     description =f'The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]})',
                     status='success', icon = sac.BsIcon(name='house', size = 50, color=None)
                 )
-                st.session_state.pdq_values = (p, d, q, P, D, Q, s) 
+                st.session_state.pdqs_values = (p, d, q, P, D, Q, s) 
                 return (p, d, q, P, D, Q, s)
              
              else: 
                 return (True, True, True, True, True, True, True)
              
         p, d, q, P, D, Q, s = run_sarima(df)
+
 
