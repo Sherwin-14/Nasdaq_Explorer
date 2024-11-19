@@ -20,7 +20,7 @@ period = n_years * 365
 st.session_state.df['Date'] = st.session_state.df['Date'].dt.tz_localize(None)
 
 train = st.session_state.df[['Date','Close']]
-train['Date'] = pd.to_datetime(train['Date']) # Ensure dates are in correct format
+train['Date'] = pd.to_datetime(train['Date'])
 train = train.rename(columns = {"Date":"ds","Close":"y"})
 
 m = Prophet()

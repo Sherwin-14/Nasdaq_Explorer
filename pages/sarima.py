@@ -42,6 +42,10 @@ with tab1:
                     sac.result(label ='', description = 'This suggests that the data might be white noise or random walk. Please select any other dataset or add more data to current one!',status = 500 )
                     return (p, d, q, P, D, Q, s)
                 
+                if P == 0 and D == 0 and Q == 0: 
+                    sac.result(label ='', description = 'This suggests that the data might not have seasonal patterns, please upload a different dataset or move to ARIMA section',status = 500 )
+                    return (p, d, q, P, D, Q, s)
+                
                 sac.result(
 
                     label='Result',
@@ -57,21 +61,28 @@ with tab1:
         p, d, q, P, D, Q, s = run_sarima(df)  
 
 with tab2:
+      
       if st.session_state.pdqs_values is not None:
             p, d, q, P, D, Q, S = st.session_state.pdqs_values 
             print(p,d,q,P,Q,D,S)
             st.subheader("Upload the same file for modelling")
-            uploaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="4")
+            uploaded_data = st.file_uploader("Choose a CSV file", type=["csv"])
             print(uploaded_data) 
 
             if uploaded_data is not None:
-
-                df = pd.read_csv(uploaded_data, parse_dates=['Date'])
-                print(df)
-                st.subheader("Data after preprocessing and stationarity check")
-                st.dataframe(df.sample(5), use_container_width=True)
-
-                st.warning("Before clicking the button below make sure that you have identified best set of parameters from previous tab.")
+                try:
+                    df = pd.read_csv(uploaded_data, parse_dates=['Date'])
+                    st.subheader("Data after preprocessing and stationarity check")
+                    st.dataframe(df.sample(5), use_container_width=True)
+                    st.warning("Before clicking the button below make sure that you have identified best set of parameters from previous tab.")
+                except pd.errors.EmptyDataError:
+                    st.error("The uploaded file is empty.")
+                except pd.errors.ParserError:
+                    st.error("Error parsing the uploaded file.")
+                except Exception as e:
+                    st.error(f"Error uploading file: {e}")
+            else:
+                 st.write("Please upload a CSV file")
 
 
 
