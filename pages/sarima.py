@@ -19,7 +19,7 @@ with tab1:
     st.subheader("Upload a file for creation of sarima model")
     uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "3")
 
-    st.session_state.pdqs_values = None
+    st.session_state.pdqs_values  =  None
 
     if uplodaded_data is not None:
 
@@ -60,16 +60,18 @@ with tab1:
              
         p, d, q, P, D, Q, s = run_sarima(df)  
 
+        if st.session_state.pdqs_values is None:
+          st.session_state.pdqs_values =   p, d, q, P, D, Q , s
+
 with tab2:
       
       if st.session_state.pdqs_values is not None:
-            p, d, q, P, D, Q, S = st.session_state.pdqs_values 
-            print(p,d,q,P,Q,D,S)
+            p, d, q, P, D, Q, S = st.session_state.pdqs_values
             st.subheader("Upload the same file for modelling")
-            uploaded_data = st.file_uploader("Choose a CSV file", type=["csv"])
-            print(uploaded_data) 
+            uploaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key = "4")
 
             if uploaded_data is not None:
+
                 try:
                     df = pd.read_csv(uploaded_data, parse_dates=['Date'])
                     st.subheader("Data after preprocessing and stationarity check")
@@ -81,8 +83,12 @@ with tab2:
                     st.error("Error parsing the uploaded file.")
                 except Exception as e:
                     st.error(f"Error uploading file: {e}")
+
             else:
                  st.write("Please upload a CSV file")
+      else:   
+          st.write("Please upload the csv")
+          print(st.session_state.pdqs_values)         
 
 
 
