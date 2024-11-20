@@ -42,7 +42,8 @@ with tab1:
         st.session_state.df = df
 
         return df
-
+    
+    @st.cache_resource
     def validate_data(df):
         status_messages = [] 
 
@@ -103,7 +104,8 @@ with tab1:
             st.success(validation_summary)
 
         return df
-        
+    
+    @st.cache_resource   
     def display_summary_and_graph(df):
         # Display summary statistics
         with st.container():
@@ -156,7 +158,8 @@ with tab2:
 with tab3:
 
     st.subheader("Stationarity Tests")
-
+    
+    @st.cache_resource
     def check_stationarity(df, method='ADF'):
          if method == 'ADF':
             clean_df = df[['Date','Close']].dropna()

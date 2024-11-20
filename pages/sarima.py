@@ -26,7 +26,7 @@ with tab1:
         df = pd.read_csv(uplodaded_data, parse_dates=['Date']) 
         st.subheader("Data after preprocessing and stationarity check") 
         st.dataframe(df.sample(5), use_container_width=True) 
-
+        
         def run_sarima(df):
              
              if st.button('Get the best model parameters'): 
@@ -52,7 +52,7 @@ with tab1:
                     description =f'The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]})',
                     status='success', icon = sac.BsIcon(name='house', size = 50, color=None)
                 )
-                st.session_state.pdqs_values = (p, d, q, P, D, Q, s) 
+
                 return (p, d, q, P, D, Q, s)
              
              else: 
@@ -61,7 +61,7 @@ with tab1:
         p, d, q, P, D, Q, s = run_sarima(df)  
 
         if st.session_state.pdqs_values is None:
-          st.session_state.pdqs_values =   p, d, q, P, D, Q , s
+          st.session_state.pdqs_values =   (p, d, q, P, D, Q , s)
 
 with tab2:
       
@@ -84,11 +84,64 @@ with tab2:
                 except Exception as e:
                     st.error(f"Error uploading file: {e}")
 
+                if st.button("Start Processing") :
+
+                    df['Date'] = pd.to_datetime(df['Date'])
+                    df = df.dropna()
+                    df.set_index('Date', inplace=True)
+
+                    df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
+                    n_splits = 5 
+                    tscv = TimeSeriesSplit(n_splits=n_splits)
+
+                    print(p,d,q,P,D,Q,s)
+
+                    for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
+                        train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
+                        model = SARIMAX(train_df['Close'], order=(p,d,q), seasonal_order=(P,D,Q,s))
+                        model_fit = model.fit() # Generate the forecast data 
+                        forecast = model_fit.forecast(steps=len(test_df))
+                        forecast = forecast.dropna() 
+                        test_df = test_df.dropna() 
+
+                    final_model = SARIMAX(df['Close'], order=(p, d, q), seasonal_order=(P, D, Q, s)) 
+                    final_model_fit = final_model.fit()    
+
+                    # Generate the forecast data
+                    forecast = final_model_fit.forecast(steps=30)
+
+                    # Create a DataFrame to display the forecast data and metrics
+                    forecast_df = pd.DataFrame({'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast})
+
+                    st.subheader("Forecast Data For Next 30 Days")
+                    # Display the forecast data and metrics
+                    st.dataframe(forecast_df.sample(10).sort_values(by = ['Date'],ascending = True).style.set_table_styles([{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}]).background_gradient(cmap='Blues'),use_container_width = True)
+
+                    mean_value = forecast_df['Forecast'].mean()
+
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
+                    st.subheader("SARIMA Model Forecast and Mean Comparison")
+                    fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
+                    fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
+                    fig.update_xaxes(showgrid=True) 
+                    fig.update_yaxes(showgrid=True)  
+                    st.plotly_chart(fig)
+
+                    @st.cache_resource
+                    def get_model_file():
+                        model_file = "sarima_model.pkl"
+                        with open(model_file, "wb") as f:
+                            pickle.dump(final_model_fit, f)
+                        return model_file
+
+                    model_file = get_model_file()
+                    st.download_button("Download The Model", model_file, file_name="sarima_model.pkl")    
+
             else:
                  st.write("Please upload a CSV file")
-      else:   
-          st.write("Please upload the csv")
-          print(st.session_state.pdqs_values)         
+
+
 
 
 

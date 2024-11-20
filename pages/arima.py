@@ -22,7 +22,7 @@ with tab1:
         df = pd.read_csv(uplodaded_data,parse_dates = ['Date'])
         st.subheader("Data after preprocessing and stationarity check")
         st.dataframe(df.sample(5),use_container_width = True)
-
+        
         def run_arima(df):
 
             if st.button('Get the best model parameters'):
