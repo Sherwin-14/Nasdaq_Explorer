@@ -118,12 +118,61 @@ with tab2:
 
                 fig = go.Figure()
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
-                st.subheader("ARIMA Model Forecast and Mean Comparison")
+                st.subheader("ARIMA Model Forecast for Next 30 Days and Mean Comparison")
                 fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
                 fig.update_xaxes(showgrid=True) 
                 fig.update_yaxes(showgrid=True)  
                 st.plotly_chart(fig)
+
+                # Get the last 30 days of data for comparison
+                test_values = df['Close'].iloc[-30:]
+
+                # Create a figure to display the comparison graph
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=test_values.index, y=test_values, mode='lines', name='Actual Values', line=dict(color='green', dash='dash')))
+                fig.add_trace(go.Scatter(x=test_values.index, y=final_model_fit.forecast(steps=30), mode='lines', name='Predicted Values', line=dict(color='blue', dash='dash')))
+                fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
+                fig.update_xaxes(showgrid=True) 
+                fig.update_yaxes(showgrid=True)  
+                st.subheader("ARIMA Model Actual vs Predicted Values")
+                st.plotly_chart(fig)
+
+                # Calculate the metrics
+                actual_values = df['Close'].iloc[-30:]
+                predicted_values = final_model_fit.forecast(steps=30)
+
+                # Print values to check for any NaNs or infinities 
+                print("Actual Values:\n", actual_values) 
+                print("Predicted Values:\n", predicted_values) # Check for NaNs or infinities 
+                
+                if actual_values.isna().any() or np.isinf(actual_values).any():
+                    print("Actual values contain NaNs or Infinities") 
+                    
+                if predicted_values.isna().any() or np.isinf(predicted_values).any(): 
+                    print("Predicted values contain NaNs or Infinities")
+                # Handle division by zero in RMSPE calculation 
+                def safe_rmspe(actual, predicted): 
+                    return np.sqrt(np.mean(np.square((actual - predicted) / (actual + np.finfo(float).eps))))
+
+                mae = np.mean(np.abs(actual_values - predicted_values))
+                print(mae)
+                mse = np.mean((actual_values - predicted_values)**2)
+                rmse = np.sqrt(mse)
+                rmspe = np.sqrt(np.mean(((actual_values - predicted_values) / actual_values)**2))
+
+                # Create a DataFrame of the metrics
+                metrics_df = pd.DataFrame({
+                    'Metric': ['MAE', 'MSE', 'RMSE', 'RMSPE'],
+                    'Value': [mae, mse, rmse, rmspe]
+                })
+
+                # Display the DataFrame
+                st.subheader("Model Performance Metrics")
+                st.write("MAE: ", mae)
+                st.write("MSE: ", mse)
+                st.write("RMSE: ", rmse)
+                st.write("RMSPE: ", rmspe)
 
                 @st.cache_resource
                 def get_model_file():

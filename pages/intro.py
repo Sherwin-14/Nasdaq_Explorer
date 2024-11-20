@@ -145,6 +145,9 @@ with tab2:
 
     T, S, R = decomposition.trend, decomposition.seasonal, decomposition.resid
 
+    # Create a DataFrame with the decomposed components 
+    decomposed_df = pd.DataFrame({ 'Date': st.session_state.df['Date'], 'Trend': T, 'Seasonal': S, 'Residual': R }).dropna()
+
     with st.container():
         st.subheader('Trend')
         st.line_chart(T)
@@ -155,11 +158,13 @@ with tab2:
         st.subheader('Residual')
         st.line_chart(R)  
 
+    csv = decomposed_df.to_csv(index=False) 
+    st.download_button("Download Decomposed Data as CSV", csv, "decomposed_data.csv")    
+
 with tab3:
 
     st.subheader("Stationarity Tests")
     
-    @st.cache_resource
     def check_stationarity(df, method='ADF'):
          if method == 'ADF':
             clean_df = df[['Date','Close']].dropna()

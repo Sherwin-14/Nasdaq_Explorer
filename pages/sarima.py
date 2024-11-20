@@ -128,6 +128,8 @@ with tab2:
                     fig.update_yaxes(showgrid=True)  
                     st.plotly_chart(fig)
 
+                   
+
                     @st.cache_resource
                     def get_model_file():
                         model_file = "sarima_model.pkl"
