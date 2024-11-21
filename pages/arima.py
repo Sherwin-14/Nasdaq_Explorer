@@ -119,10 +119,10 @@ with tab2:
                 fig = go.Figure()
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
                 st.subheader("ARIMA Model Forecast for Next 30 Days and Mean Comparison")
-                fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
+                fig.update_layout(xaxis_title='Date', yaxis_title='', legend_title='Legend', showlegend=True) # Hide y-axis title
                 fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
-                fig.update_xaxes(showgrid=True) 
-                fig.update_yaxes(showgrid=True)  
+                fig.update_xaxes(showgrid=False) # Remove x-axis gridlines
+                fig.update_yaxes(showgrid=False, showticklabels=False) # Remove y-axis gridlines and tick labels
                 st.plotly_chart(fig)
 
                 # Get the last 30 days of data for comparison
@@ -142,37 +142,23 @@ with tab2:
                 actual_values = df['Close'].iloc[-30:]
                 predicted_values = final_model_fit.forecast(steps=30)
 
-                # Print values to check for any NaNs or infinities 
-                print("Actual Values:\n", actual_values) 
-                print("Predicted Values:\n", predicted_values) # Check for NaNs or infinities 
-                
-                if actual_values.isna().any() or np.isinf(actual_values).any():
-                    print("Actual values contain NaNs or Infinities") 
-                    
-                if predicted_values.isna().any() or np.isinf(predicted_values).any(): 
-                    print("Predicted values contain NaNs or Infinities")
-                # Handle division by zero in RMSPE calculation 
-                def safe_rmspe(actual, predicted): 
-                    return np.sqrt(np.mean(np.square((actual - predicted) / (actual + np.finfo(float).eps))))
+                actual_values = np.where(actual_values == 0, 1e-10, actual_values)
+                actual_values = np.where(np.abs(actual_values) < 1e-10, 1e-10, actual_values)
 
+                # Calculate the metrics
                 mae = np.mean(np.abs(actual_values - predicted_values))
-                print(mae)
                 mse = np.mean((actual_values - predicted_values)**2)
                 rmse = np.sqrt(mse)
-                rmspe = np.sqrt(np.mean(((actual_values - predicted_values) / actual_values)**2))
+                rmspe = np.sqrt(np.mean((actual_values - predicted_values) / (np.abs(actual_values) + 1e-10))**2)
 
                 # Create a DataFrame of the metrics
                 metrics_df = pd.DataFrame({
-                    'Metric': ['MAE', 'MSE', 'RMSE', 'RMSPE'],
-                    'Value': [mae, mse, rmse, rmspe]
+                     'Metrics': ['Mean Absolute Error', 'Mean Squared Error', 'Root Mean Squared Error', 'Root Mean Squared Percentage Error'],
+                     'Value': [mae, mse, rmse, rmspe]
                 })
 
-                # Display the DataFrame
-                st.subheader("Model Performance Metrics")
-                st.write("MAE: ", mae)
-                st.write("MSE: ", mse)
-                st.write("RMSE: ", rmse)
-                st.write("RMSPE: ", rmspe)
+                st.subheader("ARIMA Model Performance Metrics")
+                st.dataframe(metrics_df.style.format({'Value': '{:.4f}'}).background_gradient(cmap='OrRd'),use_container_width = True)
 
                 @st.cache_resource
                 def get_model_file():
