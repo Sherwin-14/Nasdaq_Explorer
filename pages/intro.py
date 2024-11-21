@@ -165,6 +165,8 @@ with tab3:
 
     st.subheader("Stationarity Tests")
     
+    st.session_state.last_value = None
+    
     def check_stationarity(df, method='ADF'):
          if method == 'ADF':
             clean_df = df[['Date','Close']].dropna()
@@ -172,6 +174,8 @@ with tab3:
             result = adfuller(clean_df['Close'],autolag='AIC')
             statistic, p_value, used_lag, n_obs, critical_values, icbest = result
             diff_count = 0
+            last_value_before_differencing = clean_df['Close'].iloc[-1]
+            st.write(last_value_before_differencing)
             print(p_value)
             while p_value > 0.05:
                 st.warning(f'The series is not stationary after {diff_count} differences. Making it stationary...')
@@ -197,11 +201,7 @@ with tab3:
 
             st.write(result_summary)
 
-            print(clean_df.shape)
-
             stationary_df = pd.DataFrame({ 'Date': original_dates, 'Close': clean_df['Close'] }) 
-
-            print(stationary_df)
 
             # Download the stationary data
             st.download_button(
@@ -211,7 +211,13 @@ with tab3:
                 mime="text/csv",
             )
 
-    check_stationarity(st.session_state.df) 
+            return stationary_df, last_value_before_differencing
+
+    stationary_df, last_value_before_differencing = check_stationarity(st.session_state.df) 
+
+    st.session_state.last_value = last_value_before_differencing 
+
+    print(last_value_before_differencing)
 
     st.subheader("Stationarity Check for Residuals") 
 

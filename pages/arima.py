@@ -75,6 +75,14 @@ with tab2:
         st.subheader("Upload the same file for modelling")
         uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="2")
 
+        if 'last_value' not in st.session_state: 
+            st.warning("Please first perform the stationarity check to initialize the required values.") 
+            st.stop()
+        
+        else:
+            last_value_before_differencing = st.session_state.last_value
+            st.write(f"Last value before differencing: {last_value_before_differencing}")
+
         if uplodaded_data is not None:
 
             df = pd.read_csv(uplodaded_data,parse_dates = ['Date'])
@@ -102,13 +110,15 @@ with tab2:
                     test_df = test_df.dropna() 
 
                 final_model = ARIMA(df['Close'], order=(p, d, q)) 
-                final_model_fit = final_model.fit()    
+                final_model_fit = final_model.fit() 
 
-                # Generate the forecast data
-                forecast = final_model_fit.forecast(steps=30)
+                forecast_diff = final_model_fit.forecast(steps=30)   
 
-                # Create a DataFrame to display the forecast data and metrics
-                forecast_df = pd.DataFrame({'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast})
+                integrated_values = last_value_before_differencing + forecast_diff.cumsum() # Create a DataFrame to display the forecast data
+
+                integrated_test_values = last_value_before_differencing + df['Close'].cumsum()
+                
+                forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': integrated_values })
 
                 st.subheader("Forecast Data For Next 30 Days")
                 # Display the forecast data and metrics
@@ -125,13 +135,13 @@ with tab2:
                 fig.update_yaxes(showgrid=False, showticklabels=False) # Remove y-axis gridlines and tick labels
                 st.plotly_chart(fig)
 
-                # Get the last 30 days of data for comparison
-                test_values = df['Close'].iloc[-30:]
+                # Integrate the actual values from the test dataset back to the original scale 
+                test_values = df['Close'].iloc[-30:] 
 
                 # Create a figure to display the comparison graph
                 fig = go.Figure()
-                fig.add_trace(go.Scatter(x=test_values.index, y=test_values, mode='lines', name='Actual Values', line=dict(color='green', dash='dash')))
-                fig.add_trace(go.Scatter(x=test_values.index, y=final_model_fit.forecast(steps=30), mode='lines', name='Predicted Values', line=dict(color='blue', dash='dash')))
+                fig.add_trace(go.Scatter(x=test_values.index, y=integrated_test_values, mode='lines', name='Actual Values', line=dict(color='green', dash='dash')))
+                fig.add_trace(go.Scatter(x=forecast_df['Date'][:30], y=integrated_values[:30], mode='lines', name='Predicted Values', line=dict(color='blue', dash='dash')))
                 fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
                 fig.update_xaxes(showgrid=True) 
                 fig.update_yaxes(showgrid=True)  
@@ -139,23 +149,17 @@ with tab2:
                 st.plotly_chart(fig)
 
                 # Calculate the metrics
-                actual_values = df['Close'].iloc[-30:]
-                predicted_values = final_model_fit.forecast(steps=30)
-
+                actual_values = df['Close'].iloc[-30:].values 
+                forecasted_values = integrated_values.values[:30] 
+                
                 actual_values = np.where(actual_values == 0, 1e-10, actual_values)
                 actual_values = np.where(np.abs(actual_values) < 1e-10, 1e-10, actual_values)
-
-                # Calculate the metrics
-                mae = np.mean(np.abs(actual_values - predicted_values))
-                mse = np.mean((actual_values - predicted_values)**2)
-                rmse = np.sqrt(mse)
-                rmspe = np.sqrt(np.mean((actual_values - predicted_values) / (np.abs(actual_values) + 1e-10))**2)
-
-                # Create a DataFrame of the metrics
-                metrics_df = pd.DataFrame({
-                     'Metrics': ['Mean Absolute Error', 'Mean Squared Error', 'Root Mean Squared Error', 'Root Mean Squared Percentage Error'],
-                     'Value': [mae, mse, rmse, rmspe]
-                })
+                
+                mae = np.mean(np.abs(actual_values - forecasted_values)) 
+                mse = np.mean((actual_values - forecasted_values)**2) 
+                rmse = np.sqrt(mse) 
+                rmspe = np.sqrt(np.mean((actual_values - forecasted_values) / (np.abs(actual_values) + 1e-10))**2) 
+                metrics_df = pd.DataFrame({ 'Metrics': ['Mean Absolute Error', 'Mean Squared Error', 'Root Mean Squared Error', 'Root Mean Squared Percentage Error'], 'Value': [mae, mse, rmse, rmspe] })
 
                 st.subheader("ARIMA Model Performance Metrics")
                 st.dataframe(metrics_df.style.format({'Value': '{:.4f}'}).background_gradient(cmap='OrRd'),use_container_width = True)
