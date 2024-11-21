@@ -213,11 +213,13 @@ with tab3:
 
     check_stationarity(st.session_state.df) 
 
+    st.subheader("Stationarity Check for Residuals") 
+
     uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "2")
 
     if uplodaded_data is not None:
         df = pd.read_csv(uplodaded_data,parse_dates = ['Date'])
-        st.subheader("Data after preprocessing and stationarity check")
+        st.subheader("Data after decompostion")
         st.dataframe(df.sample(5),use_container_width = True)
 
         # Function to check stationarity of residuals
@@ -240,7 +242,6 @@ with tab3:
             stationary_residuals = pd.Series(clean_series).dropna() 
             return stationary_residuals
 
-        st.subheader("Stationarity Check for Residuals") 
         stationary_residuals = check_residual_stationarity(decomposed_df['Residual'], decomposed_df['Date'])
         if stationary_residuals is not None: 
             st.download_button("Download Stationary Residuals Data", data=stationary_residuals.to_csv(index=False), file_name="stationary_residuals_data.csv", mime="text/csv")
