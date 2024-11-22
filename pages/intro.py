@@ -103,6 +103,10 @@ with tab1:
             st.subheader("Data Validation Summary") 
             st.success(validation_summary)
 
+        with st.container():
+            st.subheader("Data Sample")
+            st.dataframe(df.head(5),use_container_width = True)   
+
         return df
     
     @st.cache_resource   
@@ -126,6 +130,13 @@ with tab1:
     df = fetch_and_display_data(selected_ticker)
     df = validate_data(df)
     display_summary_and_graph(df)
+
+    original_csv_button = st.download_button(
+    label="Download Original CSV",
+    data=df.to_csv(index=False),
+    file_name="original_data.csv",
+    mime="text/csv"
+)
 
     if 'df' not in st.session_state:
         st.session_state.df = df
@@ -174,16 +185,14 @@ with tab3:
             result = adfuller(clean_df['Close'],autolag='AIC')
             statistic, p_value, used_lag, n_obs, critical_values, icbest = result
             diff_count = 0
-            last_value_before_differencing = clean_df['Close'].iloc[-1]
-            st.write(last_value_before_differencing)
             print(p_value)
             while p_value > 0.05:
                 st.warning(f'The series is not stationary after {diff_count} differences. Making it stationary...')
-                clean_df['Close'] = clean_df['Close'].diff()
+                clean_df['diff'] = clean_df['Close'].diff()
                 print(clean_df.isna().sum())
                 clean_df = clean_df.dropna()
                 print(clean_df.isna().sum())
-                result = adfuller(clean_df['Close'], autolag = 'AIC')
+                result = adfuller(clean_df['diff'], autolag = 'AIC')
                 statistic, p_value, used_lag, n_obs, critical_values, icbest = result
                 diff_count += 1
 
@@ -192,7 +201,7 @@ with tab3:
             result_summary = pd.DataFrame({
                 'Test': ['ADF Statistic'],
                 'Value': [statistic],
-                'p-value': [p_value],
+                'p-value': [round(p_value,2)],
                 'Used Lag': [used_lag],
                 'Number of Observations': [n_obs],
                 'Critical Values': [critical_values],
@@ -211,13 +220,9 @@ with tab3:
                 mime="text/csv",
             )
 
-            return stationary_df, last_value_before_differencing
+            return stationary_df
 
-    stationary_df, last_value_before_differencing = check_stationarity(st.session_state.df) 
-
-    st.session_state.last_value = last_value_before_differencing 
-
-    print(last_value_before_differencing)
+    stationary_df = check_stationarity(st.session_state.df) 
 
     st.subheader("Stationarity Check for Residuals") 
 

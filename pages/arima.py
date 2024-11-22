@@ -75,17 +75,10 @@ with tab2:
         st.subheader("Upload the same file for modelling")
         uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="2")
 
-        if 'last_value' not in st.session_state: 
-            st.warning("Please first perform the stationarity check to initialize the required values.") 
-            st.stop()
-        
-        else:
-            last_value_before_differencing = st.session_state.last_value
-            st.write(f"Last value before differencing: {last_value_before_differencing}")
 
         if uplodaded_data is not None:
 
-            df = pd.read_csv(uplodaded_data,parse_dates = ['Date'])
+            df = pd.read_csv(uplodaded_data, parse_dates = ['Date'])
             st.subheader("Data after preprocessing and stationarity check")
             st.dataframe(df.sample(5),use_container_width = True)
 
@@ -101,6 +94,9 @@ with tab2:
                 n_splits = 5 
                 tscv = TimeSeriesSplit(n_splits=n_splits)
 
+                all_forecasts = [] 
+                all_actuals = []
+
                 for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
                     train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
                     model = ARIMA(train_df['Close'], order=(1, 0, 0))
@@ -109,16 +105,18 @@ with tab2:
                     forecast = forecast.dropna() 
                     test_df = test_df.dropna() 
 
+                    all_forecasts.extend(forecast) 
+                    all_actuals.extend(test_df['Close'])
+
+                comparison_df = pd.DataFrame({ 'Date': df.index[-len(all_actuals):], 'Actual': all_actuals, 'Predicted': all_forecasts })
+
                 final_model = ARIMA(df['Close'], order=(p, d, q)) 
                 final_model_fit = final_model.fit() 
 
                 forecast_diff = final_model_fit.forecast(steps=30)   
 
-                integrated_values = last_value_before_differencing + forecast_diff.cumsum() # Create a DataFrame to display the forecast data
-
-                integrated_test_values = last_value_before_differencing + df['Close'].cumsum()
+                forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast_diff })
                 
-                forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': integrated_values })
 
                 st.subheader("Forecast Data For Next 30 Days")
                 # Display the forecast data and metrics
@@ -135,22 +133,18 @@ with tab2:
                 fig.update_yaxes(showgrid=False, showticklabels=False) # Remove y-axis gridlines and tick labels
                 st.plotly_chart(fig)
 
-                # Integrate the actual values from the test dataset back to the original scale 
-                test_values = df['Close'].iloc[-30:] 
-
                 # Create a figure to display the comparison graph
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=test_values.index, y=integrated_test_values, mode='lines', name='Actual Values', line=dict(color='green', dash='dash')))
-                fig.add_trace(go.Scatter(x=forecast_df['Date'][:30], y=integrated_values[:30], mode='lines', name='Predicted Values', line=dict(color='blue', dash='dash')))
-                fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
-                fig.update_xaxes(showgrid=True) 
-                fig.update_yaxes(showgrid=True)  
-                st.subheader("ARIMA Model Actual vs Predicted Values")
+                fig = go.Figure() 
+                fig.add_trace(go.Scatter(x=comparison_df['Date'], y=comparison_df['Actual'], mode='lines', name='Actual Values', line=dict(color='green', dash='dash'))) 
+                fig.add_trace(go.Scatter(x=comparison_df['Date'], y=comparison_df['Predicted'], mode='lines', name='Predicted Values', line=dict(color='blue', dash='dash')))
+                fig.update_layout( xaxis_title='Date', yaxis_title='Value', legend_title='Legend', showlegend=True, xaxis=dict(showgrid=False), yaxis=dict(showgrid=False))
+                st.subheader("ARIMA Model Actual vs Predicted Values on Test Data") 
                 st.plotly_chart(fig)
+
 
                 # Calculate the metrics
                 actual_values = df['Close'].iloc[-30:].values 
-                forecasted_values = integrated_values.values[:30] 
+                forecasted_values = forecast_df['Forecast'].values[:30]
                 
                 actual_values = np.where(actual_values == 0, 1e-10, actual_values)
                 actual_values = np.where(np.abs(actual_values) < 1e-10, 1e-10, actual_values)
