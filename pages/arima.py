@@ -1,6 +1,8 @@
 import pickle
 import plotly.graph_objects as go
 import streamlit_antd_components as sac
+import matplotlib.pyplot as plt
+
 
 from app import *
 from pmdarima import auto_arima
@@ -99,7 +101,7 @@ with tab2:
 
                 for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
                     train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
-                    model = ARIMA(train_df['Close'], order=(1, 0, 0))
+                    model = ARIMA(train_df['Close'], order=(p, d, q))
                     model_fit = model.fit() # Generate the forecast data 
                     forecast = model_fit.forecast(steps=len(test_df))
                     forecast = forecast.dropna() 
@@ -110,6 +112,19 @@ with tab2:
 
                 comparison_df = pd.DataFrame({ 'Date': df.index[-len(all_actuals):], 'Actual': all_actuals, 'Predicted': all_forecasts })
 
+                residuals = comparison_df['Actual'] - comparison_df['Predicted']
+
+                plt.figure(figsize=(15,5))
+                st.subheader("Distribution of Residuals ")
+                sns.kdeplot(residuals, shade=True)
+                plt.axvline(residuals.mean(), color='red', linestyle='--', label='Mean')
+                plt.axvline(residuals.median(), color='green', linestyle='--', label='Median')
+                plt.legend()
+                plt.title('KDE plot for Residuals')
+                plt.xlabel('Residuals')
+                plt.ylabel('Density')
+                st.pyplot(plt)
+                                
                 final_model = ARIMA(df['Close'], order=(p, d, q)) 
                 final_model_fit = final_model.fit() 
 
