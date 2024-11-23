@@ -31,9 +31,11 @@ with tab1:
 
                 df['Date'] = pd.to_datetime(df['Date'])
                 df = df.dropna()
+                
                 train_df, test_df = train_test_split(df, test_size=0.2, shuffle=False)
+
                 model = auto_arima(train_df['Close'], start_p=1, start_d=1, start_q=1, 
-                                    max_p= 4, max_d= 3, max_q = 4, m=12, 
+                                    max_p= 5, max_d= 5, max_q = 5, m=12, 
                                     seasonal=True, error_action='warn', 
                                     suppress_warnings=True, stepwise=True)
 
@@ -57,7 +59,7 @@ with tab1:
 
                 st.session_state.pdq_values = (p, d, q)
 
-                return (p,d,q)   
+                return (p,d,q)
             
             else:
                 return (True,True,True)
@@ -68,7 +70,8 @@ with tab1:
         st.session_state.pdq_values = None
 
     if st.session_state.pdq_values is not None:
-        p, d, q = st.session_state.pdq_values    
+        p, d, q = st.session_state.pdq_values   
+
 
 with tab2:
 
@@ -93,24 +96,20 @@ with tab2:
                 df.set_index('Date', inplace=True)
 
                 df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
-                n_splits = 5 
-                tscv = TimeSeriesSplit(n_splits=n_splits)
 
-                all_forecasts = [] 
-                all_actuals = []
+                train_size = int(len(df) * 0.8) 
+                train_df, test_df = df.iloc[:train_size], df.iloc[train_size:]
+               
+                final_model = ARIMA(train_df['Close'], order=(p, d, q)) 
+                final_model_fit = final_model.fit() 
 
-                for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
-                    train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
-                    model = ARIMA(train_df['Close'], order=(p, d, q))
-                    model_fit = model.fit() # Generate the forecast data 
-                    forecast = model_fit.forecast(steps=len(test_df))
-                    forecast = forecast.dropna() 
-                    test_df = test_df.dropna() 
+                predicted_close = final_model_fit.forecast(steps=len(test_df))
+                predicted_close = predicted_close[:len(test_df)]
 
-                    all_forecasts.extend(forecast) 
-                    all_actuals.extend(test_df['Close'])
+                forecast_diff = final_model_fit.forecast(steps=30)   
 
-                comparison_df = pd.DataFrame({ 'Date': df.index[-len(all_actuals):], 'Actual': all_actuals, 'Predicted': all_forecasts })
+                forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast_diff })
+                comparison_df = pd.DataFrame({ 'Date': test_df.index, 'Actual': test_df['Close'], 'Predicted': predicted_close })
 
                 residuals = comparison_df['Actual'] - comparison_df['Predicted']
 
@@ -124,14 +123,6 @@ with tab2:
                 plt.xlabel('Residuals')
                 plt.ylabel('Density')
                 st.pyplot(plt)
-                                
-                final_model = ARIMA(df['Close'], order=(p, d, q)) 
-                final_model_fit = final_model.fit() 
-
-                forecast_diff = final_model_fit.forecast(steps=30)   
-
-                forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast_diff })
-                
 
                 st.subheader("Forecast Data For Next 30 Days")
                 # Display the forecast data and metrics
@@ -158,16 +149,16 @@ with tab2:
 
 
                 # Calculate the metrics
-                actual_values = df['Close'].iloc[-30:].values 
-                forecasted_values = forecast_df['Forecast'].values[:30]
+                actual_values = comparison_df['Actual'].values 
+                predicted_values = comparison_df['Predicted'].values
                 
                 actual_values = np.where(actual_values == 0, 1e-10, actual_values)
                 actual_values = np.where(np.abs(actual_values) < 1e-10, 1e-10, actual_values)
                 
-                mae = np.mean(np.abs(actual_values - forecasted_values)) 
-                mse = np.mean((actual_values - forecasted_values)**2) 
+                mae = np.mean(np.abs(actual_values - predicted_values)) 
+                mse = np.mean((actual_values - predicted_values)**2) 
                 rmse = np.sqrt(mse) 
-                rmspe = np.sqrt(np.mean((actual_values - forecasted_values) / (np.abs(actual_values) + 1e-10))**2) 
+                rmspe = np.sqrt(np.mean((actual_values - predicted_values) / (np.abs(actual_values) + 1e-10))**2) 
                 metrics_df = pd.DataFrame({ 'Metrics': ['Mean Absolute Error', 'Mean Squared Error', 'Root Mean Squared Error', 'Root Mean Squared Percentage Error'], 'Value': [mae, mse, rmse, rmspe] })
 
                 st.subheader("ARIMA Model Performance Metrics")
@@ -177,7 +168,7 @@ with tab2:
                 def get_model_file():
                     model_file = "arima_model.pkl"
                     with open(model_file, "wb") as f:
-                        pickle.dump(model_fit, f)
+                        pickle.dump(final_model_fit, f)
                     return model_file
 
                 model_file = get_model_file()
