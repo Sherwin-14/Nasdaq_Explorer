@@ -8,6 +8,7 @@ from app import *
 from pmdarima import auto_arima
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import TimeSeriesSplit
 from statsmodels.tsa.arima.model import ARIMA
 
@@ -97,19 +98,35 @@ with tab2:
 
                 df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
 
-                train_size = int(len(df) * 0.8) 
-                train_df, test_df = df.iloc[:train_size], df.iloc[train_size:]
-               
+                train_size = int(len(df) * 0.8)
+                train_df = df[:train_size]
+                test_df = df[train_size:]
+
+                print(len(train_df), len(test_df))
+
+                scaler = StandardScaler() 
+                train_df['Close'] = scaler.fit_transform(train_df[['Close']].dropna())
+                test_df['Close'] = scaler.transform(test_df[['Close']].dropna())
+
+                # Create and fit the ARIMA model on the training data
                 final_model = ARIMA(train_df['Close'], order=(p, d, q)) 
                 final_model_fit = final_model.fit() 
 
-                predicted_close = final_model_fit.forecast(steps=len(test_df))
-                predicted_close = predicted_close[:len(test_df)]
+                start_index = len(train_df) 
+                end_index = len(train_df) + len(test_df) - 1
+                predicted_diff = final_model_fit.predict(start=start_index, end=end_index, dynamic=False) 
+                predicted_diff = scaler.inverse_transform(predicted_diff.values.reshape(-1, 1)).flatten() # To convert differenced predictions back to original scale 
+                predicted_close = df['Close'].iloc[train_size-1] + np.cumsum(predicted_diff)
 
-                forecast_diff = final_model_fit.forecast(steps=30)   
+
+                print(len(predicted_close),len(test_df),len(train_df))
+
+                # Forecast the next 30 days
+                forecast_diff = final_model_fit.forecast(steps=30)
 
                 forecast_df = pd.DataFrame({ 'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast_diff })
-                comparison_df = pd.DataFrame({ 'Date': test_df.index, 'Actual': test_df['Close'], 'Predicted': predicted_close })
+                test_df.reset_index(inplace=True) 
+                comparison_df = pd.DataFrame({ 'Date': test_df['Date'], 'Actual': test_df['Close'], 'Predicted': predicted_close})
 
                 residuals = comparison_df['Actual'] - comparison_df['Predicted']
 

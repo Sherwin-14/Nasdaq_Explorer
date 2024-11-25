@@ -25,7 +25,7 @@ with tab1:
     @st.cache_resource
     def fetch_and_display_data(selected_ticker):
         # Fetch data from Yahoo Finance
-        data = yf.download(selected_ticker, start="2019-01-01", end= date.today().strftime("%Y-%m-%d"))
+        data = yf.download(selected_ticker, start="2010-01-01", end= date.today().strftime("%Y-%m-%d"))
 
         # Create a dataframe with column names
         df = pd.DataFrame(data)
