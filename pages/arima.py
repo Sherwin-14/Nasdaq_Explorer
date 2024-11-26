@@ -95,24 +95,23 @@ with tab2:
                 df = df.dropna()
                 df.set_index('Date', inplace=True)
 
+                print(df.isna().sum())
+
                 df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
 
                 train_size = int(len(df) * 0.8)
                 train_df = df[:train_size]
                 test_df = df[train_size:]
 
-                print(len(train_df), len(test_df))
-
                 # Create and fit the ARIMA model on the training data
                 final_model = ARIMA(train_df['Close'], order=(p, d, q)) 
                 final_model_fit = final_model.fit() 
 
-                start_index = len(train_df) 
-                end_index = len(train_df) + len(test_df) - 1
+                start_index = train_size 
+                end_index = train_size + len(test_df) - 1
                 predicted_close = final_model_fit.predict(start=start_index, end=end_index) 
 
-
-                print(len(predicted_close),len(test_df),len(train_df))
+                predicted_close = predicted_close[:len(test_df)]
 
                 # Forecast the next 30 days
                 forecast_diff = final_model_fit.get_forecast(steps=30)
@@ -120,27 +119,31 @@ with tab2:
                 conf_int_95 = forecast_diff.conf_int(alpha=0.05)
                 conf_int_90 = forecast_diff.conf_int(alpha=0.10)
 
-                print(forecast,conf_int_95,conf_int_90)
-
                 forecast_df = pd.DataFrame({ 'Date': pd.date_range(start = df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast })
                 test_df.reset_index(inplace=True) 
                 comparison_df = pd.DataFrame({ 'Date': test_df['Date'], 'Actual': test_df['Close'], 'Predicted': predicted_close})
 
+                print(comparison_df)
+
+                st.subheader("Diagnostics Plots for ARIMA")
+                st.pyplot(final_model_fit.plot_diagnostics(figsize=(15,7)))
 
                 residuals = comparison_df['Actual'] - comparison_df['Predicted']
 
-                print(residuals.isna().sum())
+                if not residuals.isna().any():
 
-                plt.figure(figsize=(15,5))
-                st.subheader("Distribution of Residuals ")
-                sns.kdeplot(residuals, shade=True)
-                plt.axvline(residuals.mean(), color='red', linestyle='--', label='Mean')
-                plt.axvline(residuals.median(), color='green', linestyle='--', label='Median')
-                plt.legend()
-                plt.title('KDE plot for Residuals')
-                plt.xlabel('Residuals')
-                plt.ylabel('Density')
-                st.pyplot(plt)
+                    plt.figure(figsize=(15,5))
+                    st.subheader("Distribution of Residuals ")
+                    sns.kdeplot(residuals, shade=True)
+                    plt.axvline(residuals.mean(), color='red', linestyle='--', label='Mean')
+                    plt.axvline(residuals.median(), color='green', linestyle='--', label='Median')
+                    plt.legend()
+                    plt.title('KDE plot for Residuals')
+                    plt.xlabel('Residuals')
+                    plt.ylabel('Density')
+                    st.pyplot(plt)
+                else:
+                     print("Residuals contain NaN values. Please check the data.")
 
                 st.subheader("Forecast Data For Next 30 Days")
                 # Display the forecast data and metrics
