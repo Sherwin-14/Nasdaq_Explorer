@@ -13,7 +13,7 @@ st.warning("Please choose the appropriate stock in the Choose Stock To Analzye s
 
 st.subheader("Raw Data")
 
-uplodaded_data  = st.file_uploader("Choose a CSV file", type=["csv"])
+uplodaded_data  = st.file_uploader("Choose a CSV file", type=["csv"],key = "10")
 
 if uplodaded_data is not None:
 

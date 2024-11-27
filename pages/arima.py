@@ -104,14 +104,19 @@ with tab2:
                 test_df = df[train_size:]
 
                 # Create and fit the ARIMA model on the training data
-                final_model = ARIMA(train_df['Close'], order=(p, d, q)) 
+                final_model = ARIMA(train_df['Close'], order=(p,d, q)) 
                 final_model_fit = final_model.fit() 
 
-                start_index = train_size 
+                st.write(final_model_fit.summary())
+
+                start_index = test_df.index[0]
+                end_index = test_df.index[-1]
+
+                start_index = train_size
                 end_index = train_size + len(test_df) - 1
                 predicted_close = final_model_fit.predict(start=start_index, end=end_index) 
 
-                predicted_close = predicted_close[:len(test_df)]
+                predicted_close = predicted_close.reset_index(drop=True)
 
                 # Forecast the next 30 days
                 forecast_diff = final_model_fit.get_forecast(steps=30)
@@ -124,6 +129,7 @@ with tab2:
                 comparison_df = pd.DataFrame({ 'Date': test_df['Date'], 'Actual': test_df['Close'], 'Predicted': predicted_close})
 
                 print(comparison_df)
+                print(forecast_df.dtypes)
 
                 st.subheader("Diagnostics Plots for ARIMA")
                 st.pyplot(final_model_fit.plot_diagnostics(figsize=(15,7)))
@@ -151,15 +157,6 @@ with tab2:
 
                 mean_value = forecast_df['Forecast'].mean()
 
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
-                st.subheader("ARIMA Model Forecast for Next 30 Days and Mean Comparison")
-                fig.update_layout(xaxis_title='Date', yaxis_title='', legend_title='Legend', showlegend=True) # Hide y-axis title
-                fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
-                fig.update_xaxes(showgrid=False) # Remove x-axis gridlines
-                fig.update_yaxes(showgrid=False, showticklabels=False) # Remove y-axis gridlines and tick labels
-                st.plotly_chart(fig)
-
                 # Create a figure to display the comparison graph
                 fig = go.Figure() 
                 fig.add_trace(go.Scatter(x=comparison_df['Date'], y=comparison_df['Actual'], mode='lines', name='Actual Values', line=dict(color='green', dash='dash'))) 
@@ -175,6 +172,10 @@ with tab2:
                 
                 actual_values = np.where(actual_values == 0, 1e-10, actual_values)
                 actual_values = np.where(np.abs(actual_values) < 1e-10, 1e-10, actual_values)
+
+                predicted_values = np.where(predicted_values == 0, 1e-10, predicted_values)
+                predicted_values = np.where(np.abs(predicted_values) < 1e-10, 1e-10, predicted_values)
+
                 
                 mae = np.mean(np.abs(actual_values - predicted_values)) 
                 mse = np.mean((actual_values - predicted_values)**2) 
@@ -185,13 +186,53 @@ with tab2:
                 st.subheader("ARIMA Model Performance Metrics")
                 st.dataframe(metrics_df.style.format({'Value': '{:.4f}'}).background_gradient(cmap='OrRd'),use_container_width = True)
 
+                fig4 = plt.figure(figsize=(12,6))
+                ax = fig4.add_subplot(111)
+
+                conf_int_95.index = forecast.index
+                conf_int_90.index = forecast.index
+
+
+                ax.set_title('ARIMA model predictions')
+
+                ax.plot(train_df.index, train_df['Close'], '--b', label='Training Data')
+                ax.plot(test_df.index, test_df['Close'], '--', color='gray', label='Test Data')
+                ax.plot(forecast.index, forecast, '--', color='red', label='Next 30 Day Forecasts')
+
+                ax.fill_between(
+                forecast.index,
+                conf_int_95.iloc[:, 0],
+                conf_int_95.iloc[:, 1],
+                color="b",
+                alpha=0.1,
+                label="95% CI"
+
+                )
+
+                ax.fill_between(
+
+                forecast.index,
+                conf_int_90.iloc[:, 0],
+                conf_int_90.iloc[:, 1],
+                color="b",
+                alpha=0.2,
+                label="90% CI"
+
+                )
+
+                ax.set_xlim(pd.to_datetime(train_df.index[0]), pd.to_datetime(max(forecast.index)))
+
+                ax.legend(loc="upper left")
+
+                st.pyplot(fig4)
+
                 @st.cache_resource
                 def get_model_file():
                     model_file = "arima_model.pkl"
                     with open(model_file, "wb") as f:
                         pickle.dump(final_model_fit, f)
                     return model_file
-
+                
                 model_file = get_model_file()
                 st.download_button("Download The Model", model_file, file_name="arima_model.pkl")
 
