@@ -180,15 +180,15 @@ with tab3:
     
     def check_stationarity(df, method='ADF'):
          if method == 'ADF':
-            clean_df = df[['Date','Close']].dropna()
+            clean_df = df[['Date','Adj Close']].dropna()
             original_dates = clean_df['Date']
-            result = adfuller(clean_df['Close'],autolag='AIC')
+            result = adfuller(clean_df['Adj Close'],autolag='AIC')
             statistic, p_value, used_lag, n_obs, critical_values, icbest = result
             diff_count = 0
             print(p_value)
             while p_value > 0.05:
                 st.warning(f'The series is not stationary after {diff_count} differences. Making it stationary...')
-                clean_df['diff'] = clean_df['Close'].diff()
+                clean_df['diff'] = clean_df['Adj Close'].diff()
                 print(clean_df.isna().sum())
                 clean_df = clean_df.dropna()
                 print(clean_df.isna().sum())
@@ -210,7 +210,7 @@ with tab3:
 
             st.write(result_summary)
 
-            stationary_df = pd.DataFrame({ 'Date': original_dates, 'Close': clean_df['Close'] }) 
+            stationary_df = pd.DataFrame({ 'Date': original_dates, 'Close': clean_df['Adj Close'] }) 
 
             # Download the stationary data
             st.download_button(
@@ -276,8 +276,8 @@ with tab4:
         # Generate ACF and PACF plots
         st.subheader('ACF and PACF Plots')
         fig, axes = plt.subplots(2, 1, figsize=(10, 8))
-        plot_acf(temp_session_state['Close'], ax=axes[0], lags=lags)
-        plot_pacf(temp_session_state['Close'], ax=axes[1], lags=lags)
+        plot_acf(temp_session_state['Adj Close'], ax=axes[0], lags=lags)
+        plot_pacf(temp_session_state['Adj Close'], ax=axes[1], lags=lags)
         st.pyplot(fig)
 
     
