@@ -80,7 +80,7 @@ with tab2:
     if st.session_state.pdq_values is not None:
         p, d, q = st.session_state.pdq_values   
         st.subheader("Upload the same file for modelling")
-        uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="2")
+        uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="3")
 
 
         if uplodaded_data is not None:
@@ -160,6 +160,8 @@ with tab2:
                 combined_df = pd.DataFrame({'Date': combined_dates, 'Value': combined_data})
 
                 colors = ['blue' if i < len(df) else 'red' for i in range(len(combined_df))]
+
+                st.subheader("ARIMA Model Forecast")
 
                 fig = go.Figure(data=[
                     go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue')),

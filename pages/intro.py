@@ -34,11 +34,11 @@ with tab1:
 
         df.rename(columns = {'index': 'Date'}, inplace=True)
 
-        print(df)
+        print(df.tail(5))
 
         # Convert index to datetime
         df['Date'] = pd.to_datetime(df['Date'])
-
+       
         st.session_state.df = df
 
         return df
