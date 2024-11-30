@@ -109,7 +109,7 @@ with tab2:
                     history = [x for x in train]
                     history = pd.Series(train.squeeze()).astype('float32')
                     history = history.dropna()
-                    history = np.asarray(history, dtype=np.float64)
+                    history = np.asarray(history, dtype = np.float32)
                     predictions = [x for x in train]
                     onlypreds = []
 
@@ -118,15 +118,15 @@ with tab2:
                     for t in range(len(test)+7):
                         model = ARIMA(history, order = (p,d ,q))
                         model = model.fit()
-                        output = model.forecast()
-                        yhat = output
+                        output = model.forecast(steps=1)
+                        yhat = output[0]
                         predictions.append(yhat)
                         onlypreds.append(yhat)
                         if t < len(test):
                             obs = test.iloc[t]
                             history = np.append(history, obs)
                         else:
-                            obs = yhat[0]
+                            obs = yhat
                             history = np.append(history, obs)
 
                     return predictions, onlypreds
@@ -139,16 +139,46 @@ with tab2:
 
                 x = np.append(train, onlypreds)
 
-                print(preds)
+                print(onlypreds)
 
-                pre = pd.DataFrame(x,columns = ["ARIMA"])
-                pre = pd.concat([pre, df['Close']], axis=1)
-                df.reset_index()
-                pre = pd.concat([pre, df['Date']], axis=1)
+                pre = pd.DataFrame(onlypreds,columns = ["ARIMA"])
+                df = df.reset_index()
+                pre['Close'] = df['Close'].reset_index(drop=True)
+                pre['Date'] = df['Date'].reset_index(drop=True)
 
-                idx = pd.date_range(np.array(df.Date)[-1], periods=8, freq='D')
-                pre.Date[-8:] = idx.map(lambda x: x.date()).astype(str).str.replace("-","/")
-        
+                last_date = df['Date'].iloc[-1]
+
+                new_dates = pd.date_range(last_date, periods = len(pre), freq='D')
+                pre['Date'] = new_dates
+
+                print(pre.tail(7))
+
+                combined_data = pd.concat([df['Close'], pre['ARIMA']], ignore_index=True)
+                combined_dates = pd.concat([df['Date'], pre['Date']], ignore_index=True)
+
+                # Create a new dataframe that contains both the history and predicted values
+                combined_df = pd.DataFrame({'Date': combined_dates, 'Value': combined_data})
+
+                colors = ['blue' if i < len(df) else 'red' for i in range(len(combined_df))]
+
+                fig = go.Figure(data=[
+                    go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue')),
+                    go.Scatter(x=combined_df['Date'][len(df):], y=combined_df['Value'][len(df):], mode='lines', line=dict(color='red'))
+                ])
+
+                fig.update_layout(
+                    title='History and Predicted Values',
+                    xaxis_title='Date',
+                    yaxis_title='Value',
+                    legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01),
+                    width = 1000,
+                    height = 600,
+                    xaxis=dict(showgrid=False),  # Remove gridlines from the x-axis
+                    yaxis=dict(showgrid=False)
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+                        
 
 
 
