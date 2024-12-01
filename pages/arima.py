@@ -115,10 +115,10 @@ with tab2:
 
                     print(history,predictions)
 
-                    for t in range(len(test)+7):
+                    for t in range(len(test)):
                         model = ARIMA(history, order = (p,d ,q))
                         model = model.fit()
-                        output = model.forecast(steps=1)
+                        output = model.forecast(steps=730)
                         yhat = output[0]
                         predictions.append(yhat)
                         onlypreds.append(yhat)
@@ -164,14 +164,14 @@ with tab2:
                 st.subheader("ARIMA Model Forecast")
 
                 fig = go.Figure(data=[
-                    go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue')),
-                    go.Scatter(x=combined_df['Date'][len(df):], y=combined_df['Value'][len(df):], mode='lines', line=dict(color='red'))
+                    go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue'), name='History' ),
+                    go.Scatter(x=combined_df['Date'][len(df)-1:], y=combined_df['Value'][len(df)-1:], mode='lines', line=dict(color='red'), name='Prediction')
                 ])
 
                 fig.update_layout(
                     title='History and Predicted Values',
                     xaxis_title='Date',
-                    yaxis_title='Value',
+                    yaxis_title='Stock Price',
                     legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01),
                     width = 1000,
                     height = 600,
