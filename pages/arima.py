@@ -97,7 +97,7 @@ with tab2:
                 df = df.dropna()
                 df.set_index('Date', inplace=True)
 
-                print(df.isna().sum())
+                print(df.tail(7))
 
                 df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
 
@@ -115,13 +115,15 @@ with tab2:
 
                     print(history,predictions)
 
-                    for t in range(len(test)):
+                    for t in range(len(test)+7):
                         model = ARIMA(history, order = (p,d ,q))
                         model = model.fit()
-                        output = model.forecast(steps=730)
+                        output = model.forecast()
+                        output = pd.DataFrame(output)
+                        print(output)
                         yhat = output[0]
-                        predictions.append(yhat)
-                        onlypreds.append(yhat)
+                        predictions.append(yhat[0])
+                        onlypreds.append(yhat[0])
                         if t < len(test):
                             obs = test.iloc[t]
                             history = np.append(history, obs)
@@ -131,7 +133,7 @@ with tab2:
 
                     return predictions, onlypreds
 
-                preds, onlypreds = arima_model(train, test)
+                preds, onlypreds  = arima_model(train, test)
 
                 error_arima = math.sqrt(mean_squared_error(test, onlypreds[0:len(test)]))
                 
@@ -141,15 +143,17 @@ with tab2:
 
                 print(onlypreds)
 
-                pre = pd.DataFrame(onlypreds,columns = ["ARIMA"])
+                pre = pd.DataFrame(x,columns = ["ARIMA"])
                 df = df.reset_index()
-                pre['Close'] = df['Close'].reset_index(drop=True)
-                pre['Date'] = df['Date'].reset_index(drop=True)
+                pre = pd.concat([pre,df['Close']], axis = 1)
+                pre = pd.concat([pre,df['Date']],axis = 1)
 
                 last_date = df['Date'].iloc[-1]
 
-                new_dates = pd.date_range(last_date, periods = len(pre), freq='D')
-                pre['Date'] = new_dates
+                print(last_date)
+
+                new_dates = pd.date_range(last_date, periods = 7, freq='D')
+                pre.apply(lambda col: df['Date'].drop_duplicates().reset_index(drop=True))
 
                 print(pre.tail(7))
 
@@ -180,6 +184,7 @@ with tab2:
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
+
                         
 
 

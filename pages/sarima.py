@@ -4,11 +4,13 @@ import streamlit as st
 import plotly.graph_objects as go 
 import streamlit_antd_components as sac
 import pickle
+import math
 
 from app import *
 from pmdarima import auto_arima
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from sklearn.model_selection import train_test_split, TimeSeriesSplit 
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.model_selection import train_test_split
 
 st.title("Create SARIMA Model")
 
@@ -91,59 +93,93 @@ with tab2:
                     df.set_index('Date', inplace=True)
 
                     df['Close'] = pd.to_numeric(df['Close'], errors='coerce')
-                    n_splits = 5 
-                    tscv = TimeSeriesSplit(n_splits=n_splits)
+
+                    train_size = int(len(df) * 0.8)
+                    train = df[:train_size]
+                    test = df[train_size:]
 
                     print(p,d,q,P,D,Q,s)
 
-                    for fold, (train_index, test_index) in enumerate(tscv.split(df), 1): 
-                        train_df, test_df = df.iloc[train_index], df.iloc[test_index] 
-                        model = SARIMAX(train_df['Close'], order=(p,d,q), seasonal_order=(P,D,Q,s))
-                        model_fit = model.fit() # Generate the forecast data 
-                        forecast = model_fit.forecast(steps=len(test_df))
-                        forecast = forecast.dropna() 
-                        test_df = test_df.dropna() 
+                    def sarima_model(train,test):
+                        history = [x for x in train]
+                        history = pd.Series(train.squeeze()).astype('float32')
+                        history = history.dropna()
+                        history = np.asarray(history, dtype = np.float32)
+                        predictions = [x for x in train]
+                        onlypreds = []
+                        residuals = []
 
-                    final_model = SARIMAX(df['Close'], order=(p, d, q), seasonal_order=(P, D, Q, s)) 
-                    final_model_fit = final_model.fit()    
+                        print(history,predictions)
 
-                    # Generate the forecast data
-                    forecast = final_model_fit.forecast(steps=30)
+                        for t in range(len(test)):
+                            model = SARIMAX(history, order = (p,d ,q), seasonal_order=(P, D, Q, s))
+                            model = model.fit()
+                            output = model.forecast(steps=730)
+                            yhat = output[0]
+                            predictions.append(yhat)
+                            onlypreds.append(yhat)
+                            if t < len(test):
+                                obs = test.iloc[t]
+                                history = np.append(history, obs)
+                                residuals.append(obs - yhat)
+                            else:
+                                obs = yhat
+                                history = np.append(history, obs)
 
-                    # Create a DataFrame to display the forecast data and metrics
-                    forecast_df = pd.DataFrame({'Date': pd.date_range(start=df.index[-1] + pd.DateOffset(days=1), periods=30), 'Forecast': forecast})
+                        return predictions, onlypreds, residuals
 
-                    st.subheader("Forecast Data For Next 30 Days")
-                    # Display the forecast data and metrics
-                    st.dataframe(forecast_df.sample(10).sort_values(by = ['Date'],ascending = True).style.set_table_styles([{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}]).background_gradient(cmap='Blues'),use_container_width = True)
+                    preds, onlypreds, residuals = sarima_model(train, test)
 
-                    mean_value = forecast_df['Forecast'].mean()
+                    error_arima = math.sqrt(mean_squared_error(test, onlypreds[0:len(test)]))
+                    
+                    print(error_arima)
 
-                    fig = go.Figure()
-                    fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Forecast'], mode='lines', name='Forecasted Data', line=dict(color='blue', dash='dash'))) # Set the title and labels 
-                    st.subheader("SARIMA Model Forecast and Mean Comparison")
-                    fig.update_layout(xaxis_title='Date', yaxis_title='Value', legend_title='Legend' )
-                    fig.add_trace(go.Scatter(x=forecast_df['Date'], y=[mean_value]*len(forecast_df['Date']), mode='lines', name='Mean Value', line=dict(color='black', width=2, dash='solid')))
-                    fig.update_xaxes(showgrid=True) 
-                    fig.update_yaxes(showgrid=True)  
-                    st.plotly_chart(fig)
+                    x = np.append(train, onlypreds)
 
-                   
+                    print(onlypreds)
 
-                    @st.cache_resource
-                    def get_model_file():
-                        model_file = "sarima_model.pkl"
-                        with open(model_file, "wb") as f:
-                            pickle.dump(final_model_fit, f)
-                        return model_file
+                    pre = pd.DataFrame(onlypreds,columns = ["ARIMA"])
+                    df = df.reset_index()
+                    pre['Close'] = df['Close'].reset_index(drop=True)
+                    pre['Date'] = df['Date'].reset_index(drop=True)
 
-                    model_file = get_model_file()
-                    st.download_button("Download The Model", model_file, file_name="sarima_model.pkl")    
+                    last_date = df['Date'].iloc[-1]
 
-            else:
-                 st.write("Please upload a CSV file")
+                    new_dates = pd.date_range(last_date, periods = len(pre), freq='D')
+                    pre['Date'] = new_dates
+
+                    print(pre.tail(7))
+
+                    combined_data = pd.concat([df['Close'], pre['ARIMA']], ignore_index=True)
+                    combined_dates = pd.concat([df['Date'], pre['Date']], ignore_index=True)
+
+                    # Create a new dataframe that contains both the history and predicted values
+                    combined_df = pd.DataFrame({'Date': combined_dates, 'Value': combined_data})
+
+                    colors = ['blue' if i < len(df) else 'red' for i in range(len(combined_df))]
+
+                    st.subheader("ARIMA Model Forecast")
+
+                    fig = go.Figure(data=[
+                        go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue'), name='History' ),
+                        go.Scatter(x=combined_df['Date'][len(df)-1:], y=combined_df['Value'][len(df)-1:], mode='lines', line=dict(color='red'), name='Prediction')
+                    ])
+
+                    fig.update_layout(
+                        title='History and Predicted Values',
+                        xaxis_title='Date',
+                        yaxis_title='Stock Price',
+                        legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01),
+                        width = 1000,
+                        height = 600,
+                        xaxis=dict(showgrid=False),  # Remove gridlines from the x-axis
+                        yaxis=dict(showgrid=False)
+                    )
+
+                    st.plotly_chart(fig, use_container_width=True)
+
+                            
 
 
 
-
-
+                    
