@@ -105,38 +105,35 @@ with tab2:
                 train = df[:train_size]
                 test = df[train_size:]
 
-                def arima_model(train,test):
+                def arima_modelling(train,test):
                     history = [x for x in train]
                     history = pd.Series(train.squeeze()).astype('float32')
                     history = history.dropna()
                     history = np.asarray(history, dtype = np.float32)
                     predictions = [x for x in train]
                     onlypreds = []
-
-                    print(history,predictions)
-
-                    for t in range(len(test)+7):
+                    for t in range(len(test)):
                         model = ARIMA(history, order = (p,d ,q))
                         model = model.fit()
-                        output = model.forecast()
+                        output = model.forecast(steps = 7)
                         output = pd.DataFrame(output)
-                        print(output)
                         yhat = output[0]
-                        predictions.append(yhat[0])
-                        onlypreds.append(yhat[0])
+                        predictions.append(yhat)
+                        onlypreds.append(yhat)
                         if t < len(test):
                             obs = test.iloc[t]
                             history = np.append(history, obs)
                         else:
                             obs = yhat
                             history = np.append(history, obs)
-
                     return predictions, onlypreds
-
-                preds, onlypreds  = arima_model(train, test)
-
-                error_arima = math.sqrt(mean_squared_error(test, onlypreds[0:len(test)]))
                 
+                preds, onlypreds  = arima_modelling(train, test)
+
+                print(onlypreds)
+
+                error_arima = np.sqrt(mean_squared_error(test.iloc[0], onlypreds[0]))
+
                 print(error_arima)
 
                 x = np.append(train, onlypreds)
