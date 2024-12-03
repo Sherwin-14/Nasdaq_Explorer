@@ -186,4 +186,9 @@ with tab2:
                 with col2:
                     st.subheader("Model Performance") 
                     st.metric(label="RMSE", value=f"{error_arima:.2f}")
+                
+                with col1:
+                    st.subheader("Next 7-Day Predictions") 
+                    for i in range(7): 
+                        st.metric(label=f"Day {i+1}", value=f"{onlypreds[len(test) + i]:.7f}")
 
