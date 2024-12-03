@@ -82,13 +82,11 @@ with tab2:
         st.subheader("Upload the same file for modelling")
         uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key ="3")
 
-
         if uplodaded_data is not None:
 
             df = pd.read_csv(uplodaded_data, parse_dates = ['Date'])
             st.subheader("Data after preprocessing and stationarity check")
             st.dataframe(df.sample(5),use_container_width = True)
-
             st.warning("Before clicking the button below make sure that you have identified best set of parameters from previous tab.")
 
             if st.button("Start Processing") :
@@ -112,34 +110,33 @@ with tab2:
                     history = np.asarray(history, dtype = np.float32)
                     predictions = [x for x in train]
                     onlypreds = []
-                    for t in range(len(test)):
+
+                    for t in range(len(test)+7):
                         model = ARIMA(history, order = (p,d ,q))
                         model = model.fit()
-                        output = model.forecast(steps = 7)
+                        output = model.forecast()
                         output = pd.DataFrame(output)
                         yhat = output[0]
-                        predictions.append(yhat)
-                        onlypreds.append(yhat)
+                        predictions.append(yhat[0])
+                        onlypreds.append(yhat[0])
                         if t < len(test):
                             obs = test.iloc[t]
                             history = np.append(history, obs)
                         else:
-                            obs = yhat
+                            obs = yhat[0]
                             history = np.append(history, obs)
+
                     return predictions, onlypreds
                 
                 preds, onlypreds  = arima_modelling(train, test)
 
                 print(onlypreds)
 
-                error_arima = np.sqrt(mean_squared_error(test.iloc[0], onlypreds[0]))
+                error_arima = math.sqrt(mean_squared_error(test, onlypreds[0:len(test)]))
 
                 print(error_arima)
 
                 x = np.append(train, onlypreds)
-
-                print(onlypreds)
-
                 pre = pd.DataFrame(x,columns = ["ARIMA"])
                 df = df.reset_index()
                 pre = pd.concat([pre,df['Close']], axis = 1)
@@ -149,24 +146,26 @@ with tab2:
 
                 print(last_date)
 
-                new_dates = pd.date_range(last_date, periods = 7, freq='D')
+                new_dates = pd.date_range(last_date, periods = 7 , freq='D')
                 pre.apply(lambda col: df['Date'].drop_duplicates().reset_index(drop=True))
 
                 print(pre.tail(7))
 
-                combined_data = pd.concat([df['Close'], pre['ARIMA']], ignore_index=True)
-                combined_dates = pd.concat([df['Date'], pre['Date']], ignore_index=True)
+                new_df = pd.DataFrame({'Date': new_dates, 'Close': pre['ARIMA'].tail(7)})
 
                 # Create a new dataframe that contains both the history and predicted values
-                combined_df = pd.DataFrame({'Date': combined_dates, 'Value': combined_data})
+                combined_df = pd.concat([df, new_df], ignore_index=True)
+
+                print(combined_df)
 
                 colors = ['blue' if i < len(df) else 'red' for i in range(len(combined_df))]
 
                 st.subheader("ARIMA Model Forecast")
 
                 fig = go.Figure(data=[
-                    go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue'), name='History' ),
-                    go.Scatter(x=combined_df['Date'][len(df)-1:], y=combined_df['Value'][len(df)-1:], mode='lines', line=dict(color='red'), name='Prediction')
+                    go.Scatter(x=combined_df['Date'][:-7], y=combined_df['Close'][:-7], mode='lines', line=dict(color='blue'), name='History' ),
+                    go.Scatter(x=combined_df['Date'][-7:], y=combined_df['Close'][-7:], mode='lines', line=dict(color='red'), name='Prediction'),
+                    go.Scatter(x=combined_df['Date'][-7:], y=combined_df['Close'][-7:], mode='markers', marker=dict(size=8, color='red'), name='Predicted Points')
                 ])
 
                 fig.update_layout(
@@ -182,8 +181,9 @@ with tab2:
 
                 st.plotly_chart(fig, use_container_width=True)
 
-                        
+                # Display the RMSE of the model \
+                col1, col2 , col3 = st.columns(3)
+                with col2:
+                    st.subheader("Model Performance") 
+                    st.metric(label="RMSE", value=f"{error_arima:.2f}")
 
-
-
-                
