@@ -190,5 +190,5 @@ with tab2:
                 with col1:
                     st.subheader("Next 7-Day Predictions") 
                     for i in range(7): 
-                        st.metric(label=f"Day {i+1}", value=f"{onlypreds[len(test) + i]:.7f}")
+                        st.metric(label=f"Day {i+1}", value=f"${onlypreds[len(test) + i]:.7f}")
 

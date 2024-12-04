@@ -100,69 +100,63 @@ with tab2:
 
                     print(p,d,q,P,D,Q,s)
 
-                    def sarima_model(train,test):
+                    def sarima_modelling(train,test):
                         history = [x for x in train]
                         history = pd.Series(train.squeeze()).astype('float32')
                         history = history.dropna()
                         history = np.asarray(history, dtype = np.float32)
                         predictions = [x for x in train]
                         onlypreds = []
-                        residuals = []
 
-                        print(history,predictions)
-
-                        for t in range(len(test)):
+                        for t in range(len(test)+7):
                             model = SARIMAX(history, order = (p,d ,q), seasonal_order=(P, D, Q, s))
                             model = model.fit()
-                            output = model.forecast(steps=730)
+                            output = model.forecast()
+                            output = pd.DataFrame(output)
                             yhat = output[0]
-                            predictions.append(yhat)
-                            onlypreds.append(yhat)
+                            predictions.append(yhat[0])
+                            onlypreds.append(yhat[0])
                             if t < len(test):
                                 obs = test.iloc[t]
                                 history = np.append(history, obs)
-                                residuals.append(obs - yhat)
                             else:
-                                obs = yhat
+                                obs = yhat[0]
                                 history = np.append(history, obs)
 
-                        return predictions, onlypreds, residuals
+                        return predictions, onlypreds
 
-                    preds, onlypreds, residuals = sarima_model(train, test)
+                    preds, onlypreds = sarima_modelling(train, test)
 
                     error_arima = math.sqrt(mean_squared_error(test, onlypreds[0:len(test)]))
                     
                     print(error_arima)
 
                     x = np.append(train, onlypreds)
-
-                    print(onlypreds)
-
-                    pre = pd.DataFrame(onlypreds,columns = ["ARIMA"])
+                    pre = pd.DataFrame(x,columns = ["ARIMA"])
                     df = df.reset_index()
-                    pre['Close'] = df['Close'].reset_index(drop=True)
-                    pre['Date'] = df['Date'].reset_index(drop=True)
+                    pre = pd.concat([pre,df['Close']], axis = 1)
+                    pre = pd.concat([pre,df['Date']],axis = 1)
 
                     last_date = df['Date'].iloc[-1]
 
                     new_dates = pd.date_range(last_date, periods = len(pre), freq='D')
-                    pre['Date'] = new_dates
+                    pre.apply(lambda col: df['Date'].drop_duplicates().reset_index(drop=True))
 
-                    print(pre.tail(7))
-
-                    combined_data = pd.concat([df['Close'], pre['ARIMA']], ignore_index=True)
-                    combined_dates = pd.concat([df['Date'], pre['Date']], ignore_index=True)
+                    new_df = pd.DataFrame({'Date': new_dates, 'Close': pre['ARIMA'].tail(7)})
 
                     # Create a new dataframe that contains both the history and predicted values
-                    combined_df = pd.DataFrame({'Date': combined_dates, 'Value': combined_data})
+                    combined_df = pd.concat([df, new_df], ignore_index=True)
+
+                    print(combined_df)
 
                     colors = ['blue' if i < len(df) else 'red' for i in range(len(combined_df))]
 
                     st.subheader("ARIMA Model Forecast")
 
                     fig = go.Figure(data=[
-                        go.Scatter(x=combined_df['Date'][:len(df)], y=combined_df['Value'][:len(df)], mode='lines', line=dict(color='blue'), name='History' ),
-                        go.Scatter(x=combined_df['Date'][len(df)-1:], y=combined_df['Value'][len(df)-1:], mode='lines', line=dict(color='red'), name='Prediction')
+                        go.Scatter(x=combined_df['Date'][:-7], y=combined_df['Close'][:-7], mode='lines', line=dict(color='blue'), name='History' ),
+                        go.Scatter(x=combined_df['Date'][-7:], y=combined_df['Close'][-7:], mode='lines', line=dict(color='red'), name='Prediction'),
+                        go.Scatter(x=combined_df['Date'][-7:], y=combined_df['Close'][-7:], mode='markers', marker=dict(size=8, color='red'), name='Predicted Points')
                     ])
 
                     fig.update_layout(
@@ -178,8 +172,16 @@ with tab2:
 
                     st.plotly_chart(fig, use_container_width=True)
 
-                            
-
-
-
+                    # Display the RMSE of the model \
+                    col1, col2 , col3 = st.columns(3)
+                    with col2:
+                        st.subheader("Model Performance") 
+                        st.metric(label="RMSE", value=f"{error_arima:.2f}")
                     
+                    with col1:
+                        st.subheader("Next 7-Day Predictions") 
+                        for i in range(7): 
+                            st.metric(label=f"Day {i+1}", value=f"${onlypreds[len(test) + i]:.7f}")
+
+
+                        
