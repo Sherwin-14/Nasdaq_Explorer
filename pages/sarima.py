@@ -21,8 +21,6 @@ with tab1:
     st.subheader("Upload a file for creation of sarima model")
     uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "3")
 
-    st.session_state.pdqs_values  =  None
-
     if uplodaded_data is not None:
 
         df = pd.read_csv(uplodaded_data, parse_dates=['Date']) 
@@ -54,16 +52,22 @@ with tab1:
                     description =f'The best SARIMA model for this dataset would have parameters of ({model.order[0]}, {model.order[1]}, {model.order[2]}) and seasonal order of ({model.seasonal_order[0]}, {model.seasonal_order[1]}, {model.seasonal_order[2]}, {model.seasonal_order[3]})',
                     status='success', icon = sac.BsIcon(name='house', size = 50, color=None)
                 )
-
+                
+                st.session_state.pdqs_values = (p, d, q, P, D, Q, s)
                 return (p, d, q, P, D, Q, s)
              
              else: 
-                return (True, True, True, True, True, True, True)
+                return (0,0,0,0,0,0,0)
              
         p, d, q, P, D, Q, s = run_sarima(df)  
 
-        if st.session_state.pdqs_values is None:
-          st.session_state.pdqs_values =   (p, d, q, P, D, Q , s)
+        if 'pdqs_values' not in st.session_state:
+            st.session_state.pdqs_values = None
+
+        if st.session_state.pdqs_values is not None:
+            (p, d, q, P, D, Q , s) = st.session_state.pdqs_values  
+
+        print(P,D,Q,s)
 
 with tab2:
       
