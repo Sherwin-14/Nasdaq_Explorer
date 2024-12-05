@@ -57,7 +57,7 @@ with tab1:
                 return (p, d, q, P, D, Q, s)
              
              else: 
-                return (0,0,0,0,0,0,0)
+                return (True,True,True,True,True,True,True)
              
         p, d, q, P, D, Q, s = run_sarima(df)  
 
@@ -143,7 +143,7 @@ with tab2:
 
                     last_date = df['Date'].iloc[-1]
 
-                    new_dates = pd.date_range(last_date, periods = len(pre), freq='D')
+                    new_dates = pd.date_range(last_date, periods = 7, freq='D')
                     pre.apply(lambda col: df['Date'].drop_duplicates().reset_index(drop=True))
 
                     new_df = pd.DataFrame({'Date': new_dates, 'Close': pre['ARIMA'].tail(7)})
