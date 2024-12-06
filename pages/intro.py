@@ -224,41 +224,6 @@ with tab3:
 
     stationary_df = check_stationarity(st.session_state.df) 
 
-    st.subheader("Stationarity Check for Residuals") 
-
-    uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "2")
-
-    if uplodaded_data is not None:
-        df = pd.read_csv(uplodaded_data,parse_dates = ['Date'])
-        st.subheader("Data after decompostion")
-        st.dataframe(df.sample(5),use_container_width = True)
-
-        # Function to check stationarity of residuals
-        def check_residual_stationarity(residual_series,dates):
-            clean_series = residual_series.dropna() 
-            result = adfuller(clean_series, autolag='AIC') 
-            statistic, p_value, used_lag, n_obs, critical_values, icbest = result 
-            diff_count = 0
-
-            while p_value > 0.05: 
-                st.warning(f'The residuals are not stationary after {diff_count} differences. Making them stationary...') 
-                clean_series = clean_series.diff().dropna() 
-                result = adfuller(clean_series, autolag='AIC') 
-                statistic, p_value, used_lag, n_obs, critical_values, icbest = result 
-                diff_count += 1 
-            st.success(f'The residuals are now stationary after {diff_count} differences.')
-
-            result_summary = pd.DataFrame({ 'Test': ['ADF Statistic'], 'Value': [statistic], 'p-value': [p_value], 'Used Lag': [used_lag], 'Number of Observations': [n_obs], 'Critical Values': [critical_values], 'IC Best': [icbest] }) 
-            st.write(result_summary) 
-            stationary_residuals = pd.Series(clean_series).dropna() 
-            return stationary_residuals
-
-        stationary_residuals = check_residual_stationarity(decomposed_df['Residual'], decomposed_df['Date'])
-        if stationary_residuals is not None: 
-            st.download_button("Download Stationary Residuals Data", data=stationary_residuals.to_csv(index=False), file_name="stationary_residuals_data.csv", mime="text/csv")
-
-
-     
 with tab4:
 
     st.subheader('Autoregression Plots')
