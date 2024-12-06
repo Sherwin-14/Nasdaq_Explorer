@@ -73,9 +73,6 @@ def train_and_forecast(data, model_name):
     elif model_name == "XGBoost": 
         model = XGBRegressor(**study.best_params)
 
-    elif model_name == "Gradient Boosting": 
-        model = GradientBoostingRegressor(**study.best_params)
-
     model.fit(X_train, y_train)
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
@@ -91,7 +88,7 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "1")
 if uplodaded_data is not None:
      data = load_data(uplodaded_data) 
      st.subheader("Choose the algorithm") 
-     model_name = st.selectbox("Select the ML Model", ["Linear Regression", "XGBoost","Gradient Boosting"]) # Only show feature engineering settings if XGBoost is selected 
+     model_name = st.selectbox("Select the ML Model", ["Linear Regression", "XGBoost"]) # Only show feature engineering settings if XGBoost is selected 
      
      if model_name == "XGBoost": 
         st.subheader("Feature Engineering Settings") 
