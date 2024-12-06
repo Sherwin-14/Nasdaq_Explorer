@@ -35,7 +35,7 @@ def preprocess_data(data, lag_steps, window_size):
 
      if 'Date' in data.columns: 
          data = data.drop(columns=['Date'])
-     
+
      return data.dropna()
 
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
@@ -47,15 +47,12 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
         param = { 'n_estimators': trial.suggest_int('n_estimators', 50, 300), 'max_depth': trial.suggest_int('max_depth', 3, 10), 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3) } 
         model = XGBRegressor(**param)
 
-     elif model_name == "Random Forest": 
-        param = { 'n_estimators': trial.suggest_int('n_estimators', 50, 300), 'max_depth': trial.suggest_int('max_depth', 3, 20) } 
-        model = RandomForestRegressor(**param)
-
      model.fit(X_train, y_train) 
      predictions = model.predict(X_test) 
      rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
-     return rmse
 
+     
+ 
 def train_and_forecast(data, model_name):
 
     train_size = int(len(data) * 0.8)
@@ -76,18 +73,14 @@ def train_and_forecast(data, model_name):
     elif model_name == "XGBoost": 
         model = XGBRegressor(**study.best_params)
 
-    elif model_name == "Random Forest":
-        model = RandomForestRegressor(**study.best_params) 
-
     elif model_name == "Gradient Boosting": 
         model = GradientBoostingRegressor(**study.best_params)
 
     model.fit(X_train, y_train)
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
-    
-    return test.index, y_test, predictions, rmse
 
+    return predictions , rmse 
 
 st.title("Forecasting with ML Models")
 
@@ -97,9 +90,8 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "1")
 
 if uplodaded_data is not None:
      data = load_data(uplodaded_data) 
-     st.write(data.head()) 
      st.subheader("Choose the algorithm") 
-     model_name = st.selectbox("Select the ML Model", ["Linear Regression", "XGBoost", "Random Forest", "Gradient Boosting"]) # Only show feature engineering settings if XGBoost is selected 
+     model_name = st.selectbox("Select the ML Model", ["Linear Regression", "XGBoost","Gradient Boosting"]) # Only show feature engineering settings if XGBoost is selected 
      
      if model_name == "XGBoost": 
         st.subheader("Feature Engineering Settings") 
@@ -114,8 +106,9 @@ if uplodaded_data is not None:
          else: 
             data = preprocess_data(data, lag_steps=1, window_size=1) 
             
-         test_index, y_test, predictions, rmse = train_and_forecast(data, model_name) 
+         predictions, rmse = train_and_forecast(data, model_name)
+         st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
-         forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
-         st.write(forecast_df)
+         #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
+         #st.write(forecast_df)
          
