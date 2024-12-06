@@ -22,7 +22,7 @@ pages = {
         st.Page("pages/prophet.py", title="Prophet", icon="🛍️"),
         st.Page("pages/sarima.py", title="SARIMA Modelling", icon="💸"),
         st.Page("pages/ml_models.py", title="Machine Learning Models", icon="⏰"),
-        #st.Page("pages/brand_analysis_extended.py",title="Brand Analysis Extended",icon="📊"),
+        st.Page("pages/dl_models.py",title="Deep Learning Models",icon="📋"),
         #st.Page("pages/suggested_items_analysis.py",title="Requested Items Analysis",icon="📋"),
         #st.Page("pages/rfm_model.py", title="Customer Segmentation Model", icon="👥"),
 
