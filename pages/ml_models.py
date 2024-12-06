@@ -10,16 +10,19 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor 
 from xgboost import XGBRegressor 
 
+@st.cache_resource
 def create_lag_features(data, lag_steps=1): 
     print("Initial data shape:", data.shape)
     for i in range(1, lag_steps + 1): data[f'lag_{i}'] = data['Close'].shift(i)
     print("Data shape after lag features:", data.shape)
     return data.dropna() 
 
+@st.cache_resource
 def create_rolling_mean(data, window_size=3): 
     data['rolling_mean'] = data['Close'].rolling(window=window_size).mean() 
     return data.dropna() 
 
+@st.cache_resource
 def apply_fourier_transform(data): 
     fft = np.fft.fft(data['Close'].values) 
     data['fourier_transform'] = np.abs(fft) 
@@ -30,6 +33,7 @@ def load_data(uploaded_file):
     data = pd.read_csv(uploaded_file,parse_dates=['Date']) 
     return data
 
+@st.cache_resource
 def preprocess_data(data, lag_steps, window_size,model_name):
      if model_name == "XGBoost":
          data = create_lag_features(data, lag_steps) 
@@ -38,9 +42,10 @@ def preprocess_data(data, lag_steps, window_size,model_name):
 
      X = data.drop(columns=['Close', 'Date']) 
      y = data['Close'] 
-     
+
      return X, y
 
+@st.cache_resource
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
      
      if model_name == "Linear Regression":
@@ -54,6 +59,7 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
      predictions = model.predict(X_test) 
      rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
+@st.cache_resource
 def train_and_forecast(data, model_name):
 
     if model_name == "XGBoost": 
