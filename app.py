@@ -19,7 +19,7 @@ pages = {
 
     "Resources": [
         st.Page("pages/arima.py", title="ARIMA Modelling", icon="📊"),
-        st.Page("pages/prophet.py", title="Prophet", icon="🛍️"),
+        st.Page("pages/prophet.py", title="Prophet Modelling", icon="🛍️"),
         st.Page("pages/sarima.py", title="SARIMA Modelling", icon="💸"),
         st.Page("pages/ml_models.py", title="Machine Learning Models", icon="⏰"),
         st.Page("pages/dl_models.py",title="Deep Learning Models",icon="📋"),
