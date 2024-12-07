@@ -9,7 +9,7 @@ from pages.intro import *
 
 st.title("Forecasting with FB Prophet")
 
-st.warning("Please choose the appropriate stock in the Choose Stock To Analzye section and download the dataset before attempting to download the model.")
+st.warning("Please choose the appropriate stock in the Choose Stock To Analzye section and download the dataset before attempting forecasting.")
 
 st.subheader("Raw Data")
 

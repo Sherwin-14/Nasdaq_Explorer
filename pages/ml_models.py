@@ -97,8 +97,6 @@ def train_and_forecast(data, model_name):
 
 st.title("Forecasting with ML Models")
 
-st.subheader("Choose dataset for forecasting")
-
 uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "1")
 
 if uplodaded_data is not None:
