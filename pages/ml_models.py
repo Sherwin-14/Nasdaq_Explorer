@@ -12,9 +12,8 @@ from xgboost import XGBRegressor
 
 @st.cache_resource
 def create_lag_features(data, lag_steps=1): 
-    print("Initial data shape:", data.shape)
-    for i in range(1, lag_steps + 1): data[f'lag_{i}'] = data['Close'].shift(i)
-    print("Data shape after lag features:", data.shape)
+    for i in range(1, lag_steps + 1): 
+        data[f'lag_{i}'] = data['Close'].shift(i)
     return data.dropna() 
 
 @st.cache_resource
@@ -40,12 +39,16 @@ def preprocess_data(data, lag_steps, window_size,model_name):
          data = create_rolling_mean(data, window_size) 
          data = data.dropna() 
 
-     X = data.drop(columns=['Close', 'Date']) 
+     if 'Date' in data.columns: 
+         data = data.drop(columns=['Date'])
+
+     print(data.dtypes)
+
+     X = data.drop(columns=['Close']) 
      y = data['Close'] 
 
      return X, y
 
-@st.cache_resource
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
      
      if model_name == "Linear Regression":
@@ -59,19 +62,32 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
      predictions = model.predict(X_test) 
      rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
+     return rmse
+
+def prepare_future_features(data, lag_steps, window_size): 
+    last_row = data.iloc[-1:].copy() 
+    future_data = pd.DataFrame() 
+    for i in range(1, lag_steps + 1): 
+        future_data[f'lag_{i}'] = last_row['Close'].shift(i) 
+        
+    future_data['rolling_mean'] = last_row['Close'].rolling(window=window_size).mean() 
+    future_data = future_data.dropna() 
+    
+    return future_data
+
 @st.cache_resource
-def train_and_forecast(data, model_name):
+def train_and_forecast(X,y, model_name):
+
+    print(X.isna().sum(),y)
 
     if model_name == "XGBoost": 
         X, y = preprocess_data(data, lag_steps, window_size, model_name) 
     else: 
         X, y = preprocess_data(data, lag_steps=1, window_size=1, model_name=model_name)
 
-    train_size = int(len(data) * 0.8)
-    train, test = data.iloc[:train_size], data.iloc[train_size:] 
-
-    X_train, y_train = train.drop(columns=['Close']), train['Close'] 
-    X_test, y_test = test.drop(columns=['Close']), test['Close']
+    train_size = int(len(X) * 0.8) 
+    X_train, X_test = X.iloc[:train_size], X.iloc[train_size:] 
+    y_train, y_test = y.iloc[:train_size], y.iloc[train_size:]
 
     study = optuna.create_study(direction='minimize') 
     study.optimize(lambda trial: objective(trial, X_train, y_train, X_test, y_test, model_name), n_trials=50) 
@@ -90,7 +106,7 @@ def train_and_forecast(data, model_name):
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
     future_dates = pd.date_range(data['Date'].iloc[-1], periods=7, freq='D') 
-    future_features = np.array([len(X) + i for i in range(7)]).reshape(-1, 1) 
+    future_features = prepare_future_features(data, lag_steps, window_size).values
     next_7_days = model.predict(future_features)
 
     return predictions , rmse , next_7_days
@@ -112,12 +128,12 @@ if uplodaded_data is not None:
      if st.button("Start Forecasting"):
          
          if model_name == "XGBoost": 
-            data = preprocess_data(data, lag_steps, window_size,model_name=model_name) 
+            X,y = preprocess_data(data, lag_steps, window_size,model_name=model_name) 
 
          else: 
             data = preprocess_data(data, lag_steps=1, window_size=1, model_name = model_name) 
             
-         predictions, rmse, next_7_days = train_and_forecast(data, model_name)
+         predictions, rmse, next_7_days = train_and_forecast(X,y, model_name)
          st.write(predictions, next_7_days) 
          st.write(f"RMSE: {rmse:.2f}") 
          #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
