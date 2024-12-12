@@ -50,11 +50,8 @@ def preprocess_data(data, lag_steps, window_size,model_name):
      return X, y
 
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
-     
-     if model_name == "Linear Regression":
-         model = LinearRegression() 
-
-     elif model_name == "XGBoost": 
+    
+     if model_name == "XGBoost": 
         param = { 'n_estimators': trial.suggest_int('n_estimators', 50, 300), 'max_depth': trial.suggest_int('max_depth', 3, 10), 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3) } 
         model = XGBRegressor(**param)
 
@@ -95,10 +92,7 @@ def train_and_forecast(X,y, model_name):
     st.write("Best parameters found: ", study.best_params) 
     st.write("Best RMSE: ", study.best_value)
 
-    if model_name == "Linear Regression": 
-        model = LinearRegression() 
-
-    elif model_name == "XGBoost": 
+    if model_name == "XGBoost": 
         model = XGBRegressor(**study.best_params)
 
     model.fit(X_train, y_train)
