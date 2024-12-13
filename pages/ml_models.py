@@ -60,13 +60,24 @@ def calculate_macd(data, span1=12, span2=26, signal_span=9):
     ema_26 = data['Close'].ewm(span=span2, min_periods=span2).mean()
     data['MACD'] = ema_12 - ema_26
     data['MACD_signal'] = data['MACD'].ewm(span=signal_span, min_periods=signal_span).mean()
+
     return data
 
 @st.cache_resource
-def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9], rsi_period=14, macd_spans=(12, 26, 9)):
-     data = create_moving_average_features(data) # Calculate RSI and add it as a feature 
+def create_shifted_targets(data, num_days=7):
+    for i in range(1, num_days + 1):
+        data[f'Close_shift_{i}'] = data['Close'].shift(-i)
+
+    return data.dropna()
+
+@st.cache_resource
+def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9], rsi_period=14, macd_spans=(12, 26, 9), num_days = 7):
+
+     data = create_moving_average_features(data)
      data['RSI'] = relative_strength_idx(data, n=rsi_period).fillna(0)
      data = calculate_macd(data, span1=macd_spans[0], span2=macd_spans[1], signal_span=macd_spans[2])
+
+     data = create_shifted_targets(data, num_days=num_days)
 
      data = data.dropna()
 
@@ -152,9 +163,7 @@ if uplodaded_data is not None:
      
      if model_name == "XGBoost": 
         st.subheader("Feature Engineering Settings") 
-        lag_steps = st.number_input("Lag Steps", min_value=1, max_value=10, value=3) 
-        window_size = st.number_input("Rolling Mean Window Size", min_value=1, max_value=10, value=3)
-
+        
      if st.button("Start Forecasting"):
          
          if model_name == "XGBoost": 
