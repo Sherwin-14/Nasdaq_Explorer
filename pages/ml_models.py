@@ -8,23 +8,29 @@ from app import *
 from sklearn.metrics import mean_squared_error 
 from sklearn.linear_model import LinearRegression 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor 
+from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor 
 
 @st.cache_resource
-def create_lag_features(data, lag_steps=1): 
-    for i in range(1, lag_steps + 1): 
-        data[f'lag_{i}'] = data['Close'].shift(i)
+def create_sma_features(data, window_sizes=[5, 10, 15, 30]): 
+    for window_size in window_sizes: 
+        data[f'SMA_{window_size}'] = data['Close'].rolling(window=window_size).mean() 
+
     return data.dropna() 
 
 @st.cache_resource
-def create_rolling_mean(data, window_size=3): 
-    data['rolling_mean'] = data['Close'].rolling(window=window_size).mean() 
+def create_ema_features(data, window_sizes=[9]): 
+    for window_size in window_sizes: 
+        data[f'EMA_{window_size}'] = data['Close'].ewm(span=window_size, adjust=False).mean() 
+
     return data.dropna() 
 
 @st.cache_resource
-def apply_fourier_transform(data): 
-    fft = np.fft.fft(data['Close'].values) 
-    data['fourier_transform'] = np.abs(fft) 
+def create_moving_average_features(data): 
+    
+    data = create_sma_features(data) 
+    data = create_ema_features(data) 
+
     return data
 
 @st.cache_resource
@@ -47,10 +53,15 @@ def preprocess_data(data, lag_steps, window_size,model_name):
      X = data.drop(columns=['Close']) 
      y = data['Close'] 
 
+
+     scaler = StandardScaler() 
+     X_scaled = scaler.fit_transform(X) 
+     X = pd.DataFrame(X_scaled, columns=X.columns)
+
      return X, y
 
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
-    
+
      if model_name == "XGBoost": 
         param = { 'n_estimators': trial.suggest_int('n_estimators', 50, 300), 'max_depth': trial.suggest_int('max_depth', 3, 10), 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3) } 
         model = XGBRegressor(**param)
@@ -64,11 +75,10 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
 def prepare_future_features(data, lag_steps, window_size): 
     last_row = data.iloc[-1:].copy() 
     future_data = pd.DataFrame() 
-    for i in range(1, lag_steps + 1): 
-        future_data[f'lag_{i}'] = last_row['Close'].shift(i) 
+    for i in range(1, lag_steps + 1):
+        future_data[f'lag_{i}'] = [data['Close'].iloc[-i]] * 7  
         
-    future_data['rolling_mean'] = last_row['Close'].rolling(window=window_size).mean() 
-    future_data = future_data.dropna() 
+    future_data['rolling_mean'] = [data['Close'].iloc[-window_size:].mean()] * 7
     
     return future_data
 
@@ -93,17 +103,18 @@ def train_and_forecast(X,y, model_name):
     st.write("Best RMSE: ", study.best_value)
 
     if model_name == "XGBoost": 
-        model = XGBRegressor(**study.best_params)
-
+        model = XGBRegressor(**study.best_params,alpha=0.5)
+    
     model.fit(X_train, y_train)
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
     future_dates = pd.date_range(data['Date'].iloc[-1], periods=7, freq='D') 
     future_features = prepare_future_features(data, lag_steps, window_size).values
+    print(future_features)
     next_7_days = model.predict(future_features)
 
-    return predictions , rmse , next_7_days
+    return predictions, rmse, next_7_days
 
 st.title("Forecasting with ML Models")
 
@@ -112,7 +123,7 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"],key = "1")
 if uplodaded_data is not None:
      data = load_data(uplodaded_data) 
      st.subheader("Choose the algorithm") 
-     model_name = st.selectbox("Select the ML Model", ["Linear Regression", "XGBoost"]) # Only show feature engineering settings if XGBoost is selected 
+     model_name = st.selectbox("Select the ML Model", ["XGBoost"]) # Only show feature engineering settings if XGBoost is selected 
      
      if model_name == "XGBoost": 
         st.subheader("Feature Engineering Settings") 
@@ -128,7 +139,7 @@ if uplodaded_data is not None:
             data = preprocess_data(data, lag_steps=1, window_size=1, model_name = model_name) 
             
          predictions, rmse, next_7_days = train_and_forecast(X,y, model_name)
-         st.write(predictions, next_7_days) 
+         st.write(next_7_days) 
          st.write(f"RMSE: {rmse:.2f}") 
          #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
          #st.write(forecast_df)
