@@ -27,7 +27,7 @@ def create_ema_features(data, window_sizes=[9]):
 
 @st.cache_resource
 def create_moving_average_features(data): 
-    
+
     data = create_sma_features(data) 
     data = create_ema_features(data) 
 
@@ -39,11 +39,36 @@ def load_data(uploaded_file):
     return data
 
 @st.cache_resource
-def preprocess_data(data, lag_steps, window_size,model_name):
-     if model_name == "XGBoost":
-         data = create_lag_features(data, lag_steps) 
-         data = create_rolling_mean(data, window_size) 
-         data = data.dropna() 
+def relative_strength_idx(df, n=14):
+     close = df['Close'] 
+     delta = close.diff() 
+     delta = delta[1:] 
+     pricesUp = delta.copy() 
+     pricesDown = delta.copy() 
+     pricesUp[pricesUp < 0] = 0 
+     pricesDown[pricesDown > 0] = 0 
+     rollUp = pricesUp.rolling(n).mean() 
+     rollDown = pricesDown.abs().rolling(n).mean() 
+     rs = rollUp / rollDown 
+     rsi = 100.0 - (100.0 / (1.0 + rs)) 
+     
+     return rsi
+
+@st.cache_resource
+def calculate_macd(data, span1=12, span2=26, signal_span=9):
+    ema_12 = data['Close'].ewm(span=span1, min_periods=span1).mean()
+    ema_26 = data['Close'].ewm(span=span2, min_periods=span2).mean()
+    data['MACD'] = ema_12 - ema_26
+    data['MACD_signal'] = data['MACD'].ewm(span=signal_span, min_periods=signal_span).mean()
+    return data
+
+@st.cache_resource
+def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9], rsi_period=14, macd_spans=(12, 26, 9)):
+     data = create_moving_average_features(data) # Calculate RSI and add it as a feature 
+     data['RSI'] = relative_strength_idx(data, n=rsi_period).fillna(0)
+     data = calculate_macd(data, span1=macd_spans[0], span2=macd_spans[1], signal_span=macd_spans[2])
+
+     data = data.dropna()
 
      if 'Date' in data.columns: 
          data = data.drop(columns=['Date'])
