@@ -89,11 +89,6 @@ def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9]
      X = data.drop(columns=['Close']) 
      y = data['Close'] 
 
-
-     scaler = StandardScaler() 
-     X_scaled = scaler.fit_transform(X) 
-     X = pd.DataFrame(X_scaled, columns=X.columns)
-
      return X, y
 
 def objective(trial, X_train, y_train, X_test, y_test, model_name):
@@ -108,27 +103,15 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
 
      return rmse
 
-def prepare_future_features(data, lag_steps, window_size): 
-    last_row = data.iloc[-1:].copy() 
-    future_data = pd.DataFrame() 
-    for i in range(1, lag_steps + 1):
-        future_data[f'lag_{i}'] = [data['Close'].iloc[-i]] * 7  
-        
-    future_data['rolling_mean'] = [data['Close'].iloc[-window_size:].mean()] * 7
-    
-    return future_data
 
 @st.cache_resource
 def train_and_forecast(X,y, model_name):
 
     print(X.isna().sum(),y)
 
-    if model_name == "XGBoost": 
-        X, y = preprocess_data(data, lag_steps, window_size, model_name) 
-    else: 
-        X, y = preprocess_data(data, lag_steps=1, window_size=1, model_name=model_name)
+    X, y = preprocess_data(data) 
 
-    train_size = int(len(X) * 0.8) 
+    train_size = int(len(X) * 0.85) 
     X_train, X_test = X.iloc[:train_size], X.iloc[train_size:] 
     y_train, y_test = y.iloc[:train_size], y.iloc[train_size:]
 
@@ -139,18 +122,13 @@ def train_and_forecast(X,y, model_name):
     st.write("Best RMSE: ", study.best_value)
 
     if model_name == "XGBoost": 
-        model = XGBRegressor(**study.best_params,alpha=0.5)
+        model = XGBRegressor(**study.best_params)
     
     model.fit(X_train, y_train)
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
-    future_dates = pd.date_range(data['Date'].iloc[-1], periods=7, freq='D') 
-    future_features = prepare_future_features(data, lag_steps, window_size).values
-    print(future_features)
-    next_7_days = model.predict(future_features)
-
-    return predictions, rmse, next_7_days
+    return predictions, rmse
 
 st.title("Forecasting with ML Models")
 
@@ -165,15 +143,9 @@ if uplodaded_data is not None:
         st.subheader("Feature Engineering Settings") 
         
      if st.button("Start Forecasting"):
-         
-         if model_name == "XGBoost": 
-            X,y = preprocess_data(data, lag_steps, window_size,model_name=model_name) 
-
-         else: 
-            data = preprocess_data(data, lag_steps=1, window_size=1, model_name = model_name) 
-            
-         predictions, rmse, next_7_days = train_and_forecast(X,y, model_name)
-         st.write(next_7_days) 
+         X,y = preprocess_data(data)  
+         predictions, rmse = train_and_forecast(X,y, model_name)
+         st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
          #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
          #st.write(forecast_df)
