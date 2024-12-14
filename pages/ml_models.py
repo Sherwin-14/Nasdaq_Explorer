@@ -27,7 +27,6 @@ def create_ema_features(data, window_sizes=[9]):
 
 @st.cache_resource
 def create_moving_average_features(data): 
-
     data = create_sma_features(data) 
     data = create_ema_features(data) 
 
@@ -63,12 +62,6 @@ def calculate_macd(data, span1=12, span2=26, signal_span=9):
 
     return data
 
-@st.cache_resource
-def create_shifted_targets(data, num_days=7):
-    for i in range(1, num_days + 1):
-        data[f'Close_shift_{i}'] = data['Close'].shift(-i)
-
-    return data.dropna()
 
 @st.cache_resource
 def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9], rsi_period=14, macd_spans=(12, 26, 9), num_days = 7):
@@ -77,7 +70,7 @@ def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9]
      data['RSI'] = relative_strength_idx(data, n=rsi_period).fillna(0)
      data = calculate_macd(data, span1=macd_spans[0], span2=macd_spans[1], signal_span=macd_spans[2])
 
-     data = create_shifted_targets(data, num_days=num_days)
+     #data = create_shifted_targets(data, num_days=num_days)
 
      data = data.dropna()
 
@@ -128,7 +121,31 @@ def train_and_forecast(X,y, model_name):
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
-    return predictions, rmse
+    return predictions, rmse, model
+
+
+def plot_feature_importance(model, feature_names):
+    feature_importances = model.feature_importances_
+    feature_importances = feature_importances / feature_importances.sum()
+    feature_importances = feature_importances * 100
+
+    sorted_importances = sorted(zip(feature_names, feature_importances), key=lambda x: x[1], reverse=True)
+
+    fig = go.Figure(data=[go.Bar(x=[x[1] for x in sorted_importances], y=[x[0] for x in sorted_importances], orientation='h', marker_color='royalblue', marker_line_color='white', marker_line_width=1)])
+    fig.update_layout(title='Feature Importance',
+                      xaxis_title='Importance (%)',
+                      yaxis_title='Feature',
+                      margin=dict(l=200, r=50, t=50, b=50),
+                      height=600,
+                      width=800,
+                      font=dict(size=12, family='Arial'),
+                      template='plotly_white',
+                      xaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
+                      yaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'))
+
+    st.plotly_chart(fig, use_container_width=True)
+
+
 
 st.title("Forecasting with ML Models")
 
@@ -138,12 +155,13 @@ if uplodaded_data is not None:
      data = load_data(uplodaded_data) 
      st.subheader("Choose the algorithm") 
      model_name = st.selectbox("Select the ML Model", ["XGBoost"]) # Only show feature engineering settings if XGBoost is selected 
-        
+
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
-         predictions, rmse = train_and_forecast(X,y, model_name)
+         predictions, rmse, model = train_and_forecast(X,y, model_name)
          st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
+         plot_feature_importance(model, X.columns)
          #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
          #st.write(forecast_df)
          
