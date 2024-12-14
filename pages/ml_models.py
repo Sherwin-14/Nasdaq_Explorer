@@ -138,9 +138,6 @@ if uplodaded_data is not None:
      data = load_data(uplodaded_data) 
      st.subheader("Choose the algorithm") 
      model_name = st.selectbox("Select the ML Model", ["XGBoost"]) # Only show feature engineering settings if XGBoost is selected 
-     
-     if model_name == "XGBoost": 
-        st.subheader("Feature Engineering Settings") 
         
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
