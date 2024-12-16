@@ -125,27 +125,41 @@ def train_and_forecast(X,y, model_name):
 
 
 def plot_feature_importance(model, feature_names):
+    # Ensure that the feature importances are normalized and sorted correctly
     feature_importances = model.feature_importances_
-    feature_importances = feature_importances / feature_importances.sum()
-    feature_importances = feature_importances * 100
+    feature_importances = feature_importances / feature_importances.sum() * 100
 
+    # Sort the importances
     sorted_importances = sorted(zip(feature_names, feature_importances), key=lambda x: x[1], reverse=True)
 
-    fig = go.Figure(data=[go.Bar(x=[x[1] for x in sorted_importances], y=[x[0] for x in sorted_importances], orientation='h', marker_color='royalblue', marker_line_color='white', marker_line_width=1)])
-    fig.update_layout(title='Feature Importance',
-                      xaxis_title='Importance (%)',
-                      yaxis_title='Feature',
-                      margin=dict(l=200, r=50, t=50, b=50),
-                      height=600,
-                      width=800,
-                      font=dict(size=12, family='Arial'),
-                      template='plotly_white',
-                      xaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
-                      yaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'))
+    # Separate the sorted features and their importances for plotting
+    features_sorted = [x[0] for x in sorted_importances]
+    importances_sorted = [x[1] for x in sorted_importances]
+
+    # Plot the sorted importances
+    fig = go.Figure(data=[go.Bar(
+        x=importances_sorted, 
+        y=features_sorted, 
+        orientation='h', 
+        marker_color='royalblue', 
+        marker_line_color='white', 
+        marker_line_width=1
+    )])
+
+    fig.update_layout(
+        xaxis_title='Importance (%)',
+        yaxis_title='Feature',
+        margin=dict(l=200, r=50, t=50, b=50),
+        height=600,
+        width=800,
+        font=dict(size=12, family='Arial'),
+        template='plotly_white',
+        xaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
+        yaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
+        yaxis_autorange='reversed'
+    )
 
     st.plotly_chart(fig, use_container_width=True)
-
-
 
 st.title("Forecasting with ML Models")
 
@@ -158,10 +172,12 @@ if uplodaded_data is not None:
 
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
-         predictions, rmse, model = train_and_forecast(X,y, model_name)
+         predictions, rmse, model,= train_and_forecast(X,y, model_name)
          st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
+         st.subheader("Feature Importance")
          plot_feature_importance(model, X.columns)
+         #st.write(next_7_days_pred)
          #forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions}) 
          #st.write(forecast_df)
          
