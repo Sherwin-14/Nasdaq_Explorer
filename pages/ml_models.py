@@ -179,14 +179,13 @@ def plot_predictions(data, X_train, y_train, X_test, y_test, predictions):
 
     # Add actual values (history)
     fig.add_trace(go.Scatter(x=train_dates, y=y_train, mode='lines', name='Train History', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(x=test_dates, y=y_test, mode='lines', name='Test History', line=dict(color='green')))
+    fig.add_trace(go.Scatter(x=test_dates, y=y_test, mode='lines', name='Test History', line=dict(color='black')))
     
     # Add predicted values
     fig.add_trace(go.Scatter(x=test_dates, y=predictions_series, mode='lines', name='Predictions', line=dict(color='red', dash='dash')))
     
     # Update layout
     fig.update_layout(
-        title='Actual vs Predicted Stock Prices',
         xaxis_title='Date',
         yaxis_title='Price',
         margin=dict(l=50, r=50, t=50, b=50),
@@ -199,11 +198,9 @@ def plot_predictions(data, X_train, y_train, X_test, y_test, predictions):
     )
 
     # Display the plot in Streamlit
+
+    st.subheader("Model Performance")
     st.plotly_chart(fig, use_container_width=True)
-
-
-st.subheader("Feature Importance")
-
 
 st.title("Forecasting with ML Models")
 
