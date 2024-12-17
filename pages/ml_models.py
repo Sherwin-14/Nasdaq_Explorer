@@ -77,10 +77,13 @@ def preprocess_data(data, window_sizes_sma=[5, 10, 15, 30], window_sizes_ema=[9]
      if 'Date' in data.columns: 
          data = data.drop(columns=['Date'])
 
-     print(data.dtypes)
+     if 'Close' in data.columns:
+         X = data.drop(columns=['Close']) 
+         y = data['Close'] 
 
-     X = data.drop(columns=['Close']) 
-     y = data['Close'] 
+     else:
+         X = data
+         y = None
 
      return X, y
 
@@ -98,7 +101,7 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
 
 
 @st.cache_resource
-def train_and_forecast(X,y, model_name):
+def train_and_forecast(X,y, model_name,data):
 
     print(X.isna().sum(),y)
 
@@ -172,7 +175,7 @@ if uplodaded_data is not None:
 
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
-         predictions, rmse, model,= train_and_forecast(X,y, model_name)
+         predictions, rmse, model,= train_and_forecast(X,y, model_name,data)
          st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
          st.subheader("Feature Importance")
