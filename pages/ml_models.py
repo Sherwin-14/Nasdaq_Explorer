@@ -124,6 +124,8 @@ def train_and_forecast(X,y, model_name,data):
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
+    plot_predictions(data, X_train, y_train, X_test, y_test, predictions)
+
     return predictions, rmse, model
 
 
@@ -163,6 +165,45 @@ def plot_feature_importance(model, feature_names):
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+def plot_predictions(data, X_train, y_train, X_test, y_test, predictions):
+    # Combine X_train and X_test with their corresponding dates for plotting
+    train_dates = data.index[:len(X_train)]
+    test_dates = data.index[len(X_train):len(X_train) + len(X_test)]
+    
+    # Convert predictions to a Pandas Series with corresponding dates
+    predictions_series = pd.Series(predictions, index=test_dates)
+    
+    # Plot the data
+    fig = go.Figure()
+
+    # Add actual values (history)
+    fig.add_trace(go.Scatter(x=train_dates, y=y_train, mode='lines', name='Train History', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=test_dates, y=y_test, mode='lines', name='Test History', line=dict(color='green')))
+    
+    # Add predicted values
+    fig.add_trace(go.Scatter(x=test_dates, y=predictions_series, mode='lines', name='Predictions', line=dict(color='red', dash='dash')))
+    
+    # Update layout
+    fig.update_layout(
+        title='Actual vs Predicted Stock Prices',
+        xaxis_title='Date',
+        yaxis_title='Price',
+        margin=dict(l=50, r=50, t=50, b=50),
+        height=600,
+        width=800,
+        font=dict(size=12, family='Arial'),
+        template='plotly_white',
+        xaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
+        yaxis=dict(showgrid=False, tickfont=dict(color='black', size=12, family='Arial'), tickcolor='black'),
+    )
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+
+st.subheader("Feature Importance")
+
 
 st.title("Forecasting with ML Models")
 
