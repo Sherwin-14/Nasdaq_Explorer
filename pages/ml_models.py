@@ -105,6 +105,8 @@ def train_and_forecast(X,y, model_name,data):
 
     print(X.isna().sum(),y)
 
+    original_dates = data['Date']
+
     X, y = preprocess_data(data) 
 
     train_size = int(len(X) * 0.85) 
@@ -124,7 +126,7 @@ def train_and_forecast(X,y, model_name,data):
     predictions = model.predict(X_test) 
     rmse = np.sqrt(mean_squared_error(y_test, predictions)) 
 
-    plot_predictions(data, X_train, y_train, X_test, y_test, predictions)
+    plot_predictions(original_dates, X_train, y_train, X_test, y_test, predictions)
 
     return predictions, rmse, model
 
@@ -166,10 +168,10 @@ def plot_feature_importance(model, feature_names):
 
     st.plotly_chart(fig, use_container_width=True)
 
-def plot_predictions(data, X_train, y_train, X_test, y_test, predictions):
+def plot_predictions(original_dates, X_train, y_train, X_test, y_test, predictions):
     # Combine X_train and X_test with their corresponding dates for plotting
-    train_dates = data.index[:len(X_train)]
-    test_dates = data.index[len(X_train):len(X_train) + len(X_test)]
+    train_dates = original_dates[:len(y_train)] 
+    test_dates = original_dates[len(y_train):len(y_train) + len(y_test)]
     
     # Convert predictions to a Pandas Series with corresponding dates
     predictions_series = pd.Series(predictions, index=test_dates)
