@@ -216,7 +216,6 @@ if uplodaded_data is not None:
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
          predictions, rmse, model,= train_and_forecast(X,y, model_name,data)
-         st.write(predictions) 
          st.write(f"RMSE: {rmse:.2f}") 
          st.subheader("Feature Importance")
          plot_feature_importance(model, X.columns)
