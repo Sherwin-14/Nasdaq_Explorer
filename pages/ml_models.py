@@ -115,9 +115,15 @@ def train_and_forecast(X,y, model_name,data):
 
     study = optuna.create_study(direction='minimize') 
     study.optimize(lambda trial: objective(trial, X_train, y_train, X_test, y_test, model_name), n_trials=50) 
-    
-    st.write("Best parameters found: ", study.best_params) 
-    st.write("Best RMSE: ", study.best_value)
+
+    col1 , col2  = st.columns(2)
+
+    with col1:
+        st.metric(label="Best RMSE", value=f"{study.best_value:.6f}")
+
+    with col2:
+        st.write(f"Best parameters found: ", study.best_params) 
+
 
     if model_name == "XGBoost": 
         model = XGBRegressor(**study.best_params)
@@ -216,7 +222,6 @@ if uplodaded_data is not None:
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
          predictions, rmse, model,= train_and_forecast(X,y, model_name,data)
-         st.write(f"RMSE: {rmse:.2f}") 
          st.subheader("Feature Importance")
          plot_feature_importance(model, X.columns)
          #st.write(next_7_days_pred)
