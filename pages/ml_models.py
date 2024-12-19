@@ -3,8 +3,10 @@ import pandas as pd
 import numpy as np 
 import plotly.graph_objects as go 
 import optuna
+import pickle
 
 from app import *
+from streamlit import download_button
 from sklearn.metrics import mean_squared_error 
 from sklearn.linear_model import LinearRegression 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor 
@@ -174,6 +176,20 @@ def plot_feature_importance(model, feature_names):
 
     st.plotly_chart(fig, use_container_width=True)
 
+    model_file = "trained_model.pkl"
+    with open(model_file, "wb") as file:
+        pickle.dump(model, file)
+
+    with open(model_file, "rb") as file:
+        download_button(
+                label="Download Trained Model",
+                data=file,
+                file_name=model_file,
+                mime="application/octet-stream"
+        )
+
+
+
 def plot_predictions(original_dates, X_train, y_train, X_test, y_test, predictions):
     # Combine X_train and X_test with their corresponding dates for plotting
     train_dates = original_dates[:len(y_train)] 
@@ -221,7 +237,7 @@ if uplodaded_data is not None:
 
      if st.button("Start Forecasting"):
          X,y = preprocess_data(data)  
-         predictions, rmse, model,= train_and_forecast(X,y, model_name,data)
+         predictions, rmse, model= train_and_forecast(X,y, model_name,data)
          st.subheader("Feature Importance")
          plot_feature_importance(model, X.columns)
          #st.write(next_7_days_pred)
