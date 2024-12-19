@@ -19,6 +19,24 @@ website:
           - text: "Machine Learning and Deep Learning"
             href: projects_ml.qmd
 
+  page-footer: 
+    left: "Created by Sherwin Varghese" 
+    right: 
+      - icon: github
+        href: https://github.com/Sherwin-14
+        target: _blank
+
+      - icon: linkedin
+        href: https://linkedin.com/in/sherwin14/
+        target: _blank
+
+      - icon: medium
+        href: https://medium.com/@varghesesherwin   
+        target: _blank
+
+    border: True
+
+
 format:
   html:
     theme: darkly
