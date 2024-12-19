@@ -1,19 +1,26 @@
 project:
   type: website
 
+
 website:
-  title: "today"
+  title: "Nasdaq Explorer"
+  twitter-card: true
+  open-graph: true
   navbar:
+    
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      
+      - href: experience.qmd
+        text: Experience and Skills
+      - text: Projects
+        menu: 
+          - text: "Business Intelligence and Data Analytics"
+            href: projects_bi.qmd
+          - text: "Machine Learning and Deep Learning"
+            href: projects_ml.qmd
 
-format:
-  html:
-    theme: cosmo
-    css: styles.css
-    toc: true
-
-
+      - href: blogs.qmd
+        text: Blogs 
 
