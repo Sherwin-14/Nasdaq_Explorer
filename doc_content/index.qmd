@@ -19,5 +19,16 @@ To get started, simply select a stock ticker symbol from the dropdown menu, and 
 
 Also you can decompose the stock pattern and stationarize the data before you decide the best modelling option for the data.
 
+::: {.callout-warning}
+## Disclaimer
+
+The predictions made by this tool are for informational purposes only and should not be taken as investment advice. Investing in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.
+
+Please do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.
+
+**Use at your own risk**
+:::
+
+
 
 
