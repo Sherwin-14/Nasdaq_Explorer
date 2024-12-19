@@ -1,16 +1,23 @@
 ---
 title: "Stock Market Modeling and Forecasting"
 
+
 ---
 
-:::{#hero-heading}
+The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train  models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more.
 
-This is a Quarto website.
+## What can you do with this app?
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+⇛ **Predict closing prices** : Use our tool to predict the closing prices of your favorite stocks based on historical data.
 
-image:
-  src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/NASDAQ.svg/1200px-NASDAQ.svg.png"
-  alt: "NASDAQ Logo"
-  width: 200px
-  align: center
+⇛ **Explore stock market trends** : Analyze historical stock market data to identify trends and patterns.
+
+
+## Get started
+
+To get started, simply select a stock ticker symbol from the dropdown menu, and our app will fetch the historical data and provide you with a dataset which you can download and use further for your analysis.
+
+Also you can decompose the stock pattern and stationarize the data before you decide the best modelling option for the data.
+
+
+

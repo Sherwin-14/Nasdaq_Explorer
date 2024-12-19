@@ -40,4 +40,4 @@ website:
 format:
   html:
     theme: darkly
-    #css: styles.css
+    css: styles.css
