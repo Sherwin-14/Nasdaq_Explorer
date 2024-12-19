@@ -11,16 +11,15 @@ website:
     left:
       - href: index.qmd
         text: Home
-      
-      - href: experience.qmd
-        text: Experience and Skills
-      - text: Projects
+
+      - text: Forecasting Models 
         menu: 
           - text: "Business Intelligence and Data Analytics"
             href: projects_bi.qmd
           - text: "Machine Learning and Deep Learning"
             href: projects_ml.qmd
 
-      - href: blogs.qmd
-        text: Blogs 
-
+format:
+  html:
+    theme: darkly
+    #css: styles.css

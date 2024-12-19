@@ -2,9 +2,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "doc_content",
+    "title": "Stock Market Modeling and Forecasting",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\nimage: src: “https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/NASDAQ.svg/1200px-NASDAQ.svg.png” alt: “NASDAQ Logo” width: 200px align: center"
   },
   {
     "objectID": "about.html",
