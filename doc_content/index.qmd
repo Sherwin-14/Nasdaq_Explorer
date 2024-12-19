@@ -6,6 +6,8 @@ title: "Stock Market Modeling and Forecasting"
 
 The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train  models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more.
 
+![](images/nasdaq.svg)
+
 ## What can you do with this app?
 
 ⇛ **Predict closing prices** : Use our tool to predict the closing prices of your favorite stocks based on historical data.
@@ -17,17 +19,21 @@ The tool uses the yfinance library to fetch historical stock market data, provid
 
 To get started, simply select a stock ticker symbol from the dropdown menu, and our app will fetch the historical data and provide you with a dataset which you can download and use further for your analysis.
 
-Also you can decompose the stock pattern and stationarize the data before you decide the best modelling option for the data.
+Before deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling.
 
 ::: {.callout-warning}
 ## Disclaimer
 
-The predictions made by this tool are for informational purposes only and should not be taken as investment advice. Investing in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.
+The predictions made by this tool are for informational purposes only and should not be taken as investment advice. 
+
+Investing in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.
 
 Please do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.
 
 **Use at your own risk**
 :::
+
+
 
 
 

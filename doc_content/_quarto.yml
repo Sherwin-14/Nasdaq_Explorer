@@ -14,9 +14,15 @@ website:
 
       - text: Forecasting Models 
         menu: 
-          - text: "Business Intelligence and Data Analytics"
+          - text: "ARIMA"
             href: projects_bi.qmd
-          - text: "Machine Learning and Deep Learning"
+          - text: "FB Prophet"
+            href: projects_ml.qmd
+          - text: "SARIMA"
+            href: projects_ml.qmd
+          - text: "Machine Learning"
+            href: projects_ml.qmd
+          - text: "Deep Learning"
             href: projects_ml.qmd
 
   page-footer: 
