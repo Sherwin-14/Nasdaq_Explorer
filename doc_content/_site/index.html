@@ -186,8 +186,26 @@ Disclaimer
 <p><strong>Use at your own risk</strong></p>
 </div>
 </div>
+</section>
+<section id="analyze-your-data" class="level2">
+<h2 class="anchored" data-anchor-id="analyze-your-data">Analyze Your Data</h2>
+<p>Upon encountering the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.</p>
+<section id="time-series-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="time-series-decomposition">Time Series Decomposition</h3>
+<p>This section focuses on decomposing the time series data into its constituent components, including trend, seasonality, and residuals. The method of decomposition is chosen based on the characteristics of the time series data. The goal is to identify and separate these components to better understand the underlying patterns and anomalies in the data.</p>
+</section>
+<section id="stationarity-check" class="level3">
+<h3 class="anchored" data-anchor-id="stationarity-check">Stationarity Check</h3>
+<p>The Stationarity tab is a crucial step in our analysis pipeline. Under the hood Augmented Dickey-Fuller (ADF) test is performed to check if the selected stock data is stationary.</p>
+<p><strong>How Does it Work?</strong></p>
+<p>When a user selects a stock ticker symbol, our system internally performs an ADF test to check for stationarity. If the test indicates that the data is stationary, you can proceed with modeling. However, if the test suggests that the data is not stationary, you can download the stationarized data to ensure accurate results when modeling.</p>
+</section>
+<section id="acf-and-pacf-plots" class="level3">
+<h3 class="anchored" data-anchor-id="acf-and-pacf-plots">ACF and PACF Plots</h3>
+<p>After checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
