@@ -3,7 +3,6 @@ title: "Stock Market Modeling and Forecasting"
 
 ---
 
-
 The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train  models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more. 
 
 ![](images/nasdaq.svg)
@@ -36,7 +35,7 @@ Please do your own research and consult with a financial advisor before making a
 
 ## Analyze Your Data
 
-Upon encountering the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.
+Upon selecting the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.
 
 ### Time Series Decomposition
 
@@ -54,5 +53,4 @@ When a user selects a stock ticker symbol, our system internally performs an ADF
 
 After checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots.
 
-
-
+**Once you are done with analzying and stationarizing data then you can move forward choosing the right model for your data.**
