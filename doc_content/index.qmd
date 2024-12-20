@@ -1,12 +1,13 @@
 ---
 title: "Stock Market Modeling and Forecasting"
 
-
 ---
 
-The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train  models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more.
+
+The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train  models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more. 
 
 ![](images/nasdaq.svg)
+
 
 ## What can you do with this app?
 
@@ -33,8 +34,25 @@ Please do your own research and consult with a financial advisor before making a
 **Use at your own risk**
 :::
 
+## Analyze Your Data
 
+Upon encountering the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.
 
+### Time Series Decomposition
+
+This section focuses on decomposing the time series data into its constituent components, including trend, seasonality, and residuals. The method of decomposition is chosen based on the characteristics of the time series data. The goal is to identify and separate these components to better understand the underlying patterns and anomalies in the data.
+
+### Stationarity Check
+
+The Stationarity tab is a crucial step in our analysis pipeline. Under the hood Augmented Dickey-Fuller (ADF) test is performed to check if the selected stock data is stationary.
+
+**How Does it Work?**
+
+When a user selects a stock ticker symbol, our system internally performs an ADF test to check for stationarity. If the test indicates that the data is stationary, you can proceed with modeling. However, if the test suggests that the data is not stationary, you can download the stationarized data to ensure accurate results when modeling.
+
+### ACF and PACF Plots
+
+After checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots.
 
 
 

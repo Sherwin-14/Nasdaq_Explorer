@@ -6,6 +6,7 @@ $headings-font-weight: 500;
 
 /* Set the font family */
 $font-family-sans-serif: sans-serif;
+$-font-size: 18px;
 
 /* Increase navbar font size */
 .navbar-nav .nav-link {
@@ -29,8 +30,9 @@ $font-family-sans-serif: sans-serif;
     
 }
 
-.n
 
-body {
-  font-size: 58px;
-}
+
+/*-- scss:rules --*/
+h1, h2, h3, h4, h5, h6 {
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, .3);
+}  
