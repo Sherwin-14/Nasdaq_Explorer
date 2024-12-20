@@ -15,15 +15,15 @@ website:
       - text: Forecasting Models 
         menu: 
           - text: "ARIMA"
-            href: projects_bi.qmd
+            href: sections/arima.qmd
           - text: "FB Prophet"
-            href: projects_ml.qmd
+            href: sections/fb_prophet.qmd
           - text: "SARIMA"
-            href: projects_ml.qmd
+            href: sections/sarima.qmd
           - text: "Machine Learning"
-            href: projects_ml.qmd
+            href: sections/ml_models.qmd
           - text: "Deep Learning"
-            href: projects_ml.qmd
+            href: sections/dl_models.qmd
 
   page-footer: 
     left: "Created by Sherwin Varghese" 
