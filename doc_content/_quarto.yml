@@ -42,7 +42,6 @@ website:
 
     border: True
 
-
 format:
   html:
     theme: darkly

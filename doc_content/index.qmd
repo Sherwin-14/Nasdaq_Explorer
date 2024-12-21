@@ -21,7 +21,8 @@ To get started, simply select a stock ticker symbol from the dropdown menu, and 
 
 Before deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling.
 
-::: {.callout-warning}
+::: {.callout-important appearance="default"}
+
 ## Disclaimer
 
 The predictions made by this tool are for informational purposes only and should not be taken as investment advice. 
