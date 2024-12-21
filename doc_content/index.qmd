@@ -34,7 +34,11 @@ Please do your own research and consult with a financial advisor before making a
 **Use at your own risk**
 :::
 
-## Analyze Your Data
+## Data Analysis and Preparation for Modeling
+
+The following sections are designed to guide you through the process of understanding and preparing your stock data for modeling. By following these steps, you'll be able to gain valuable insights into your data, identify trends and patterns, and ultimately choose the right modeling option for your analysis.
+
+### Analyze Your Data
 
 Upon selecting the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.
 
