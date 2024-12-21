@@ -145,7 +145,8 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="arima-modeling" class="level1">
 <h1>ARIMA Modeling</h1>
-<p>Internally, we are using the pmdarima library to implement the ARIMA model. This library provides a robust and efficient way to estimate the best ARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best ARIMA configuration for the dataset. This includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively.</p>
+<p>Internally, we are using the pmdarima library to implement the ARIMA model. This library provides a robust and efficient way to estimate the best ARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best ARIMA configuration for the dataset.</p>
+<p>This includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively.</p>
 <p>By default, the model will use the ideal parameters that are automatically selected by the pmdarima library. These parameters are chosen based on the characteristics of the dataset and are designed to provide the best possible fit to the data.</p>
 <p>Once the optimal ARIMA configuration is determined, the model uses this configuration to predict the next 7 days of data. The predicted values are based on the parameters of the model and are generated using the pmdarima library’s forecasting functionality.</p>
 <p><strong>To build an ARIMA model, follow these steps:</strong></p>

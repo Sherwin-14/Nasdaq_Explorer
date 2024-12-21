@@ -6,7 +6,6 @@ $headings-font-weight: 500;
 
 /* Set the font family */
 $font-family-sans-serif: sans-serif;
-$-font-size: 18px;
 
 /* Increase navbar font size */
 .navbar-nav .nav-link {
@@ -30,6 +29,26 @@ $-font-size: 18px;
     
 }
 
+body {
+  font-size: 17pt;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+main {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
 
 
 /*-- scss:rules --*/
