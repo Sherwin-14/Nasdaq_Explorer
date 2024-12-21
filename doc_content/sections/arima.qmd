@@ -1,6 +1,8 @@
 # ARIMA Modeling
 
-Internally, we are using the pmdarima library to implement the ARIMA model. This library provides a robust and efficient way to estimate the best ARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best ARIMA configuration for the dataset. This includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively.
+Internally, we are using the pmdarima library to implement the ARIMA model. This library provides a robust and efficient way to estimate the best ARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best ARIMA configuration for the dataset. 
+
+This includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively.
 
 By default, the model will use the ideal parameters that are automatically selected by the pmdarima library. These parameters are chosen based on the characteristics of the dataset and are designed to provide the best possible fit to the data.
 
