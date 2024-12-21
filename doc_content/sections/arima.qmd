@@ -8,16 +8,14 @@ By default, the model will use the ideal parameters that are automatically selec
 
 Once the optimal ARIMA configuration is determined, the model uses this configuration to predict the next 7 days of data. The predicted values are based on the parameters of the model and are generated using the pmdarima library's forecasting functionality.
 
-**To build an ARIMA model, follow these steps:**
+## Training and Forecasting with ARIMA 
 
-1. Load the Stationarized Dataset: Load the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.
+1. **Load the Stationarized Dataset**: Load the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.
 
-2. Click on Start Forecasting: Click on the Start Forecasting button to train the data on the ARIMA model.
+2. **Click on Start Forecasting**: Click on the Start Forecasting button to train the data on the ARIMA model.
 
-3. Model Training and Forecasting: After clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days.
+3. **Model Training and Forecasting**: After clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days.
 
-4. Visualization of Results: A graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.
+4. **Visualization of Results**: A graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.
 
-5. Visualization of Results: A graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.
-
-6. Metrics and RMSE: The predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric.
+5. **Metrics and RMSE**: The predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric.
