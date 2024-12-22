@@ -158,6 +158,13 @@
     "href": "sections/fb_prophet.html#training-and-forecasting-using-fb-prophet",
     "title": "FB Prophet Modelling",
     "section": "Training and Forecasting using FB Prophet",
-    "text": "Training and Forecasting using FB Prophet\n\nLoad the dataset directly.\nClick on the Start Forecasting button to train the data on the Facebook Prophet model.\nUse the slider to adjust the forecast period, ranging from 1 year to 4 years.\nA master graph will be generated showing the forecasted values untill the choosen period.\nA couple of forecasts components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph."
+    "text": "Training and Forecasting using FB Prophet\n\nLoad the dataset directly.\nClick on the Start Forecasting button to train the data on the Facebook Prophet model.\nUse the slider to adjust the forecast period, ranging from 1 year to 4 years.\nA master graph will be generated showing the forecasted values untill the choosen period.\nA couple of forecast components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph."
+  },
+  {
+    "objectID": "sections/ml_models.html",
+    "href": "sections/ml_models.html",
+    "title": "Machine Learning Models",
+    "section": "",
+    "text": "Machine Learning Models"
   }
 ]

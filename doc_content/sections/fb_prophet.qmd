@@ -4,7 +4,7 @@ Facebook Prophet is a powerful tool for forecasting time series data, but it may
 
 # FB Prophet Modelling 
 
-Facebook Prophet is a open-source software for forecasting time series data.
+Facebook Prophet is an open-source software for forecasting time series data.
 
 ## Training and Forecasting using FB Prophet
 
@@ -16,4 +16,4 @@ Facebook Prophet is a open-source software for forecasting time series data.
 
 4. A master graph will be generated showing the forecasted values untill the choosen period. 
 
-5. A couple of forecasts components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph.
+5. A couple of forecast components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph.
