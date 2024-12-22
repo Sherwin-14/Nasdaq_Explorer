@@ -1,0 +1,19 @@
+::: {.callout-note appearance="default"}
+Facebook Prophet is a powerful tool for forecasting time series data, but it may not always be the best choice. It is particularly useful when you have a time series dataset with multiple seasonality and non-uniform periods.
+:::
+
+# FB Prophet Modelling 
+
+Facebook Prophet is a open-source software for forecasting time series data.
+
+## Training and Forecasting using FB Prophet
+
+1. Load the dataset directly.
+
+2. Click on the Start Forecasting button to train the data on the Facebook Prophet model.
+
+3. Use the slider to adjust the forecast period, ranging from 1 year to 4 years.
+
+4. A master graph will be generated showing the forecasted values untill the choosen period. 
+
+5. A couple of forecasts components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph.

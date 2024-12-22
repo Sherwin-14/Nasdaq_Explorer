@@ -131,5 +131,33 @@
     "title": "SARIMA Modeling",
     "section": "Training and Forecasting with SARIMA",
     "text": "Training and Forecasting with SARIMA\n\nLoad the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.\nClick on the Start Forecasting button to train the data on the SARIMA model.\nAfter clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days, taking into account the seasonal patterns and trends in the data.\nA graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days, highlighting the seasonal patterns and trends in the data.\nThe predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric."
+  },
+  {
+    "objectID": "sections/fb_prophet.html",
+    "href": "sections/fb_prophet.html",
+    "title": "FB Prophet Modelling",
+    "section": "",
+    "text": "Note\n\n\n\nFacebook Prophet is a powerful tool for forecasting time series data, but it may not always be the best choice. It is particularly useful when you have a time series dataset with multiple seasonality and non-uniform periods."
+  },
+  {
+    "objectID": "sections/fb_prophet.html#key-features",
+    "href": "sections/fb_prophet.html#key-features",
+    "title": "FB Prophet Modelling",
+    "section": "Key Features",
+    "text": "Key Features\n\nHandles multiple seasonality with non-uniform periods\nBased on a generalized additive model"
+  },
+  {
+    "objectID": "sections/fb_prophet.html#training-and-forecasting",
+    "href": "sections/fb_prophet.html#training-and-forecasting",
+    "title": "FB Prophet Modelling",
+    "section": "Training and Forecasting",
+    "text": "Training and Forecasting\n\nLoad the dataset directly.\nClick on the Start Forecasting button to train the data on the Facebook Prophet model.\nUse the slider to adjust the forecast period, ranging from 1 year to 4 years.\nA master graph will be generated showing the forecasted values untill the choosen period.\nA couple of forecasts components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph."
+  },
+  {
+    "objectID": "sections/fb_prophet.html#training-and-forecasting-using-fb-prophet",
+    "href": "sections/fb_prophet.html#training-and-forecasting-using-fb-prophet",
+    "title": "FB Prophet Modelling",
+    "section": "Training and Forecasting using FB Prophet",
+    "text": "Training and Forecasting using FB Prophet\n\nLoad the dataset directly.\nClick on the Start Forecasting button to train the data on the Facebook Prophet model.\nUse the slider to adjust the forecast period, ranging from 1 year to 4 years.\nA master graph will be generated showing the forecasted values untill the choosen period.\nA couple of forecasts components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph."
   }
 ]
