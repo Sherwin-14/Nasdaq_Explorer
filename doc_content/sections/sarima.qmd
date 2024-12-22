@@ -1,5 +1,5 @@
 ::: {.callout-note appearance="default"}
-The SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns,
+The SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns.
 :::
 
 # SARIMA Modeling
