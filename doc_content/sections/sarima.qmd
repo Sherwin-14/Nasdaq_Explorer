@@ -14,6 +14,18 @@ In the context of the SARIMA model, the pmdarima library will automatically sele
 
 Once the optimal SARIMA configuration is determined, the model uses this configuration to predict the next 7 days of data.
 
+## Training and Forecasting with SARIMA
+
+1. Load the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.
+
+2. Click on the Start Forecasting button to train the data on the SARIMA model.
+
+3. After clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days, taking into account the seasonal patterns and trends in the data.
+
+4. A graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days, highlighting the seasonal patterns and trends in the data.
+
+5. The predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric. 
+
 
 
 

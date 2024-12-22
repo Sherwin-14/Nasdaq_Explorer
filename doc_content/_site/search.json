@@ -74,7 +74,7 @@
     "href": "sections/sarima.html",
     "title": "SARIMA Modeling",
     "section": "",
-    "text": "Note\n\n\n\nThe SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns,\n\n\n\nSARIMA Modeling\nInternally, we are using the pmdarima library just like ARIMA to implement the SARIMA model. This library provides a robust and efficient way to estimate the best SARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best SARIMA configuration for the dataset.\nThis includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively.\nAdditionally, we also consider the seasonal components of the model, which are defined by the parameters P, D, and Q. The seasonal components are used in conjunction with the non-seasonal components (p, d, and q) to form the complete SARIMA model.\nIn the context of the SARIMA model, the pmdarima library will automatically select the optimal parameters for the non-seasonal and seasonal components, including the values of p, d, q, P, D, and Q. These parameters are chosen based on the characteristics of the dataset, such as the presence of trends, seasonality, and other patterns.\nOnce the optimal SARIMA configuration is determined, the model uses this configuration to predict the next 7 days of data."
+    "text": "Note\n\n\n\nThe SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns,"
   },
   {
     "objectID": "sections/sarima.html#arima-modeling",
@@ -124,5 +124,12 @@
     "title": "ARIMA Modeling",
     "section": "",
     "text": "Load the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.\nClick on the Start Forecasting button to train the data on the ARIMA model.\nAfter clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days.\nA graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.\nThe predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric."
+  },
+  {
+    "objectID": "sections/sarima.html#training-and-forecasting-with-sarima",
+    "href": "sections/sarima.html#training-and-forecasting-with-sarima",
+    "title": "SARIMA Modeling",
+    "section": "Training and Forecasting with SARIMA",
+    "text": "Training and Forecasting with SARIMA\n\nLoad the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.\nClick on the Start Forecasting button to train the data on the SARIMA model.\nAfter clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days, taking into account the seasonal patterns and trends in the data.\nA graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days, highlighting the seasonal patterns and trends in the data.\nThe predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric."
   }
 ]
