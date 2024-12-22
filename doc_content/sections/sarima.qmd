@@ -1,0 +1,22 @@
+::: {.callout-note appearance="default"}
+The SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns,
+:::
+
+# SARIMA Modeling
+
+Internally, we are using the pmdarima library just like ARIMA to implement the SARIMA model. This library provides a robust and efficient way to estimate the best SARIMA configuration for a given dataset.The pmdarima library uses a combination of statistical tests and optimization algorithms to automatically select the best SARIMA configuration for the dataset. 
+
+This includes determining the optimal values for the parameters p, d, and q, which define the autoregressive, differencing, and moving average components of the model, respectively. 
+
+Additionally, we also consider the seasonal components of the model, which are defined by the parameters P, D, and Q. The seasonal components are used in conjunction with the non-seasonal components (p, d, and q) to form the complete SARIMA model.
+
+In the context of the SARIMA model, the pmdarima library will automatically select the optimal parameters for the non-seasonal and seasonal components, including the values of p, d, q, P, D, and Q. These parameters are chosen based on the characteristics of the dataset, such as the presence of trends, seasonality, and other patterns.
+
+Once the optimal SARIMA configuration is determined, the model uses this configuration to predict the next 7 days of data.
+
+
+
+
+
+
+

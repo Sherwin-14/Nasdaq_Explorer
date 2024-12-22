@@ -19,3 +19,5 @@ Once the optimal ARIMA configuration is determined, the model uses this configur
 4. A graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.
 
 5. The predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric.
+
+
