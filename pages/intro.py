@@ -12,7 +12,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Basic Data Exploration", "Time Series Decompo
 
 with tab1:
     
-    tickers_df = pd.read_csv('/home/sherwin/Projects/time_series_prediction/nasdaq_tickers.csv')
+    tickers_df = pd.read_csv('/home/sherwin/Projects/time_series_prediction/nasdaq_tickers_cleaned.csv')
 
     stock_tickers = tickers_df['Symbol'].tolist()
 
