@@ -70,8 +70,10 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="Nasdaq Explorer">
+<meta property="og:description" content="">
 <meta property="og:site_name" content="Nasdaq Explorer">
 <meta name="twitter:title" content="Nasdaq Explorer">
+<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -141,8 +143,21 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="machine-learning-models" class="level1">
+<h1>Machine Learning Models</h1>
+<p>Our time series web app utilizes machine learning techniques to analyze and forecast time series data. Currently, our app employs XGBoost, a powerful and efficient algorithm for handling complex time series data.</p>
+<section id="xgboost-model-overview" class="level2">
+<h2 class="anchored" data-anchor-id="xgboost-model-overview">XGBoost Model Overview</h2>
+<p>Our XGBoost model is a powerful and efficient algorithm that is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:</p>
+<p>☞ Simple Moving Averages (SMA): 5, 10, 15, 30</p>
+<p>☞ Exponential Moving Average (EMA): 9</p>
+<p>☞ Relative Strength Index (RSI): 14</p>
+<p>☞ Moving Average Convergence Divergence (MACD): 12, 26</p>
+<p>These features are used to capture trends, momentum, and volatility in the time series data. The XGBoost model is trained to predict future values based on these features.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -1,2 +1,20 @@
+# Machine Learning Models
+
+Our time series web app utilizes machine learning techniques to analyze and forecast time series data. Currently, our app employs XGBoost, a powerful and efficient algorithm for handling complex time series data. 
+
+## XGBoost Model Overview
+
+Our XGBoost model is a powerful and efficient algorithm that is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:
+
+☞ Simple Moving Averages (SMA): 5, 10, 15, 30
+
+☞ Exponential Moving Average (EMA): 9
+
+☞ Relative Strength Index (RSI): 14
+
+☞ Moving Average Convergence Divergence (MACD): 12, 26
+
+These features are used to capture trends, momentum, and volatility in the time series data. The XGBoost model is trained to predict future values based on these features.
+
 
 
