@@ -23,7 +23,7 @@ Please do your own research and consult with a financial advisor before making a
 
 
 
-## What can you do with this app?
+### What can you do with this app?
 
 ⇛ **Predict closing prices** : Use our tool to predict the closing prices of your favorite stocks based on historical data.
 
