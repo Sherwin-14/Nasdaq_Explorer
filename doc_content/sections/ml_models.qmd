@@ -16,5 +16,17 @@ Our XGBoost model is a powerful and efficient algorithm that is well-suited for 
 
 These features are used to capture trends, momentum, and volatility in the time series data. The XGBoost model is trained to predict future values based on these features.
 
+## Training and Forecasting using ML Models
+
+1. Load the stationarized dataset.
+
+2. Choose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.
+
+3. After training rmse and best model parameters would be displayed.
+
+4. A graph will be generated showing the history of the training dataset, the test dataset, and the performance of the model on test dataset.
+
+5. A fetaure importance graph would also be generated at the end.
+
 
 
