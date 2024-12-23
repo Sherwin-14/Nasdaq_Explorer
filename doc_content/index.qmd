@@ -7,6 +7,21 @@ The tool uses the yfinance library to fetch historical stock market data, provid
 
 ![](images/nasdaq.svg)
 
+::: {.callout-important appearance="default"}
+
+## Disclaimer
+
+The predictions made by this tool are for informational purposes only and should not be taken as investment advice. 
+
+Investing in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.
+
+Please do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.
+
+**Use at your own risk**
+:::
+
+
+
 
 ## What can you do with this app?
 
@@ -21,18 +36,6 @@ To get started, simply select a stock ticker symbol from the dropdown menu, and 
 
 Before deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling.
 
-::: {.callout-important appearance="default"}
-
-## Disclaimer
-
-The predictions made by this tool are for informational purposes only and should not be taken as investment advice. 
-
-Investing in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.
-
-Please do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.
-
-**Use at your own risk**
-:::
 
 ## Data Analysis and Preparation for Modeling
 

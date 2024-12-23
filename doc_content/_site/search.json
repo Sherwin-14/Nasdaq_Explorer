@@ -32,7 +32,7 @@
     "href": "index.html#get-started",
     "title": "Stock Market Modeling and Forecasting",
     "section": "Get started",
-    "text": "Get started\nTo get started, simply select a stock ticker symbol from the dropdown menu, and our app will fetch the historical data and provide you with a dataset which you can download and use further for your analysis.\nBefore deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling.\n\n\n\n\n\n\nDisclaimer\n\n\n\nThe predictions made by this tool are for informational purposes only and should not be taken as investment advice.\nInvesting in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.\nPlease do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.\nUse at your own risk"
+    "text": "Get started\nTo get started, simply select a stock ticker symbol from the dropdown menu, and our app will fetch the historical data and provide you with a dataset which you can download and use further for your analysis.\nBefore deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling."
   },
   {
     "objectID": "index.html#analyze-your-data",
@@ -180,5 +180,12 @@
     "title": "Machine Learning Models",
     "section": "",
     "text": "Load the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the training dataset, the test dataset, and the performance of the model on test dataset.\nA fetaure importance graph would also be generated at the end."
+  },
+  {
+    "objectID": "index.html#disclaimer",
+    "href": "index.html#disclaimer",
+    "title": "Stock Market Modeling and Forecasting",
+    "section": "Disclaimer",
+    "text": "Disclaimer\nThe predictions made by this tool are for informational purposes only and should not be taken as investment advice.\nInvesting in the stock market involves risks, and you should not make investment decisions based solely on the predictions made by this tool.\nPlease do your own research and consult with a financial advisor before making any investment decisions. The creators of this tool are not responsible for any losses or damages that may result from the use of this tool.\nUse at your own risk"
   }
 ]
