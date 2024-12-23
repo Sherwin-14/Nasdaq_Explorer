@@ -1,6 +1,6 @@
 # Machine Learning Models
 
-Our time series web app utilizes machine learning techniques to analyze and forecast time series data. Currently, our app employs XGBoost, a powerful and efficient algorithm for handling complex time series data. 
+Our stock prediction tool utilizes machine learning techniques to analyze and forecast time series data. Currently, we onl support  XGBoost, a powerful and efficient algorithm for handling complex time series data. 
 
 ## XGBoost Model Overview
 
@@ -26,7 +26,7 @@ These features are used to capture trends, momentum, and volatility in the time 
 
 4. A graph will be generated showing the history of the training dataset, the test dataset, and the performance of the model on test dataset.
 
-5. A fetaure importance graph would also be generated at the end.
+5. A feature importance graph would also be generated at the end.
 
 
 
