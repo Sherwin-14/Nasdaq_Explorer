@@ -118,7 +118,7 @@ with tab1:
 
         # Display graph with x-range slider
         with st.container():
-            st.subheader("Comparing The Prices Up Untill Now")
+            st.subheader("OHLC Chart for the Stock")
             df = df.reset_index()
             df_long = df.melt(id_vars = 'Date', value_vars=['Open', 'High', 'Low', 'Close'], var_name = 'Variable', value_name='Value')
             fig = px.line(df_long, x = 'Date', y='Value', color='Variable')
