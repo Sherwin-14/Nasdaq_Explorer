@@ -32,4 +32,6 @@ st.write("""
 st.button("Get Started")
 
 # Optional: Add a link to a tutorial or documentation
-st.write("Need help getting started? Check out our [tutorial](https://example.com/tutorial) or [documentation](https://example.com/docs)")
+st.write(
+    "Need help getting started? Check out our [tutorial](https://example.com/tutorial) or [documentation](https://example.com/docs)"
+)
