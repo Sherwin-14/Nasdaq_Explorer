@@ -1,6 +1,6 @@
 from app import *
 
 
-st.title("Forecasting with DL Models")
+st.titleea("Forecasting with DL Models")
 
-uploaded_file = st.file_uploader("Choose a CSV File",type = "csv",key = "40")
+uploaded_file = st.file_uploader("Choose a CSV File", type="csv", key="40")
