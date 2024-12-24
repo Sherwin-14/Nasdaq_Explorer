@@ -13,9 +13,7 @@ from datetime import date
 pages = {
     "Home": [
         st.Page("pages/home.py", title="Home", icon="🔥"),
-        st.Page(
-            "pages/intro.py", title="Upload Data or Choose Stock to analyze", icon="🤔"
-        ),
+        st.Page("pages/intro.py", title="Choose Stock to analyze", icon="🤔"),
     ],
     "Resources": [
         st.Page("pages/arima.py", title="ARIMA Modelling", icon="📊"),
