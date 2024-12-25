@@ -59,6 +59,6 @@ When a user selects a stock ticker symbol, our system internally performs an ADF
 
 ### ACF and PACF Plots
 
-After checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots.
+After checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots. The slider helps you choose no the of lags dynamically which can help you understand the data better.
 
 **Once you are done with analzying and stationarizing data then you can move forward choosing the right model for your data.**
