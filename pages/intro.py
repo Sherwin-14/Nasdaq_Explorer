@@ -218,9 +218,7 @@ with tab3:
                     f"The series is not stationary after {diff_count} differences. Making it stationary..."
                 )
                 clean_df["diff"] = clean_df["Adj Close"].diff()
-                print(clean_df.isna().sum())
                 clean_df = clean_df.dropna()
-                print(clean_df.isna().sum())
                 result = adfuller(clean_df["diff"], autolag="AIC")
                 statistic, p_value, used_lag, n_obs, critical_values, icbest = result
                 diff_count += 1
@@ -231,7 +229,7 @@ with tab3:
                 {
                     "Test": ["ADF Statistic"],
                     "Value": [statistic],
-                    "p-value": [round(p_value, 2)],
+                    "p-value": ["{:.2f}".format(p_value)],
                     "Used Lag": [used_lag],
                     "Number of Observations": [n_obs],
                     "Critical Values": [critical_values],
