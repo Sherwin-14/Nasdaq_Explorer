@@ -5,11 +5,11 @@ st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
 
-
 @st.cache_resource
 def load_data(uploaded_file):
     data = pd.read_csv(uploaded_file, parse_dates=["Date"])
     return data
+
 
 if uploaded_data is not None:
     #data = load_data(uplodaded_data)
