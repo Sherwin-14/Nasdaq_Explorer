@@ -3,9 +3,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+import math
 
 from app import *
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error
 
 class LSTMModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, n_layers, dropout):
@@ -53,6 +55,50 @@ def preprocess_data(df, time_step): # Scale the data
     return X_train, y_train, X_test, ytest, scaler
 
 
+def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=10, learning_rate=0.001):
+    # Initialize the LSTM model
+    model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout)
+
+    # Convert numpy arrays to PyTorch tensors
+    X_train_torch = torch.tensor(X_train, dtype=torch.float32)
+    y_train_torch = torch.tensor(y_train, dtype=torch.float32)
+    X_test_torch = torch.tensor(X_test, dtype=torch.float32)
+    ytest_torch = torch.tensor(ytest, dtype=torch.float32)
+
+    # Define loss function and optimizer
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+    # Training the model
+    for epoch in range(num_epochs):
+        model.train()
+        outputs = model(X_train_torch)
+        optimizer.zero_grad()
+
+        # Calculate the loss
+        loss = criterion(outputs, y_train_torch.unsqueeze(1))
+        loss.backward()
+        optimizer.step()
+
+        if (epoch + 1) % 1 == 0:
+            st.write(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+    st.write("Model training complete.")
+
+    # Evaluate the model on the test data
+    model.eval()
+    test_outputs = model(X_test_torch)
+    test_loss = criterion(test_outputs, ytest_torch.unsqueeze(1))
+    st.write(f'Test Loss: {test_loss.item():.4f}')
+
+    # Calculate RMSE
+    rmse_lstm = math.sqrt(mean_squared_error(ytest, test_outputs.detach().numpy()))
+    st.metric("RMSE of the LSTM Model", f"{rmse_lstm:.4f}")
+
+    return model, test_outputs, rmse_lstm
+
+
+
 st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
@@ -83,10 +129,10 @@ if uploaded_data is not None:
         output_dim = 1 
         n_layers = 2 
         dropout = 0.2 
-        model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout) 
         
-        st.write("LSTM model created.") 
+        model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest)
         st.write(model)
+        st.write(rmse_lstm) 
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
