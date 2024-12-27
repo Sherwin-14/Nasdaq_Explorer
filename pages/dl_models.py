@@ -41,6 +41,7 @@ def create_dataset(dataset, time_step=1):
 
     return np.array(dataX), np.array(dataY)
 
+@st.cache_resource
 def preprocess_data(df, time_step): # Scale the data 
     scaler = MinMaxScaler(feature_range=(0, 1))
     df1 = scaler.fit_transform(np.array(df).reshape(-1, 1))
@@ -60,7 +61,7 @@ def preprocess_data(df, time_step): # Scale the data
     
     return X_train, y_train, X_test, ytest, scaler
 
-
+@st.cache_resource
 def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=10, learning_rate=0.001):
     # Initialize the LSTM model
     model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout)
@@ -130,12 +131,6 @@ if uploaded_data is not None:
         st.write("X_test shape:", X_test.shape) 
         st.write("ytest shape:", ytest.shape)
 
-        input_dim = 1 
-        hidden_dim = 50 
-        output_dim = 1 
-        n_layers = 2 
-        dropout = 0.2 
-        
         model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest)
         st.write(model)
         st.write(rmse_lstm) 
