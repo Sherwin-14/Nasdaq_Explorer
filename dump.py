@@ -43,3 +43,7 @@
                             
                 idx = pd.date_range(np.array(df.Date)[-1], periods=8, freq='D')
                 pre.Date[-8:] = idx.map(lambda x: x.date()).astype(str).str.replace("-","/")
+
+  model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest)
+        st.write(model)
+        st.write(rmse_lstm) 

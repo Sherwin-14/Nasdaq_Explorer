@@ -4,6 +4,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import math
+import optuna
 
 from app import *
 from sklearn.preprocessing import MinMaxScaler
@@ -61,6 +62,47 @@ def preprocess_data(df, time_step): # Scale the data
     
     return X_train, y_train, X_test, ytest, scaler
 
+def objective(trial, X_train, y_train, X_test, ytest):
+    # Suggest hyperparameters
+    input_dim = 1
+    hidden_dim = trial.suggest_int('hidden_dim', 32, 128)
+    n_layers = trial.suggest_int('n_layers', 1, 3)
+    dropout = trial.suggest_float('dropout', 0.1, 0.5)
+    learning_rate = trial.suggest_loguniform('learning_rate', 1e-5, 1e-1)
+    num_epochs = 10  
+    
+    # Initialize the LSTM model
+    model = LSTMModel(input_dim, hidden_dim, output_dim=1, n_layers=n_layers, dropout=dropout)
+
+    # Convert numpy arrays to PyTorch tensors
+    X_train_torch = torch.tensor(X_train, dtype=torch.float32)
+    y_train_torch = torch.tensor(y_train, dtype=torch.float32)
+    X_test_torch = torch.tensor(X_test, dtype=torch.float32)
+    ytest_torch = torch.tensor(ytest, dtype=torch.float32)
+
+    # Define loss function and optimizer
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+    # Training the model
+    for epoch in range(num_epochs):
+        model.train()
+        outputs = model(X_train_torch)
+        optimizer.zero_grad()
+
+        # Calculate the loss
+        loss = criterion(outputs, y_train_torch.unsqueeze(1))
+        loss.backward()
+        optimizer.step()
+
+    # Evaluate the model on the test data
+    model.eval()
+    test_outputs = model(X_test_torch)
+    test_loss = criterion(test_outputs, ytest_torch.unsqueeze(1))
+
+    return test_loss.item()
+
+
 @st.cache_resource
 def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=10, learning_rate=0.001):
     # Initialize the LSTM model
@@ -104,8 +146,6 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim
 
     return model, test_outputs, rmse_lstm
 
-
-
 st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
@@ -131,9 +171,11 @@ if uploaded_data is not None:
         st.write("X_test shape:", X_test.shape) 
         st.write("ytest shape:", ytest.shape)
 
-        model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest)
-        st.write(model)
-        st.write(rmse_lstm) 
+        study = optuna.create_study(direction='minimize')
+        study.optimize(lambda trial: objective(trial, X_train, y_train, X_test, ytest), n_trials=50) 
+        st.write("Optimization complete.") 
+        st.write("Best RMSE:", study.best_value)
+        st.write("Best Parameters:", study.best_params)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
