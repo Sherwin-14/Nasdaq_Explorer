@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import math
 import optuna
 
 from app import *
+from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 
@@ -19,9 +19,8 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
-        h0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim)
-        c0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim)
-
+        h0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim).to(x.device) 
+        c0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim).to(x.device)
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
@@ -63,37 +62,49 @@ def preprocess_data(df, time_step): # Scale the data
     return X_train, y_train, X_test, ytest, scaler
 
 def objective(trial, X_train, y_train, X_test, ytest):
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    torch.cuda.empty_cache()
+
+    print(torch.cuda.memory_summary(device=None, abbreviated=False))
     # Suggest hyperparameters
     input_dim = 1
     hidden_dim = trial.suggest_int('hidden_dim', 32, 128)
     n_layers = trial.suggest_int('n_layers', 1, 3)
     dropout = trial.suggest_float('dropout', 0.1, 0.5)
     learning_rate = trial.suggest_loguniform('learning_rate', 1e-5, 1e-1)
-    num_epochs = 10  
-    
+    batch_size = 16 # Adjust as needed 
+    accumulation_steps = 4
+    num_epochs = 5
+
     # Initialize the LSTM model
-    model = LSTMModel(input_dim, hidden_dim, output_dim=1, n_layers=n_layers, dropout=dropout)
+    model = LSTMModel(input_dim, hidden_dim, output_dim=1, n_layers=n_layers, dropout=dropout).to(device)
 
     # Convert numpy arrays to PyTorch tensors
-    X_train_torch = torch.tensor(X_train, dtype=torch.float32)
-    y_train_torch = torch.tensor(y_train, dtype=torch.float32)
-    X_test_torch = torch.tensor(X_test, dtype=torch.float32)
-    ytest_torch = torch.tensor(ytest, dtype=torch.float32)
+    X_train_torch = torch.tensor(X_train, dtype=torch.float32).to(device)
+    y_train_torch = torch.tensor(y_train, dtype=torch.float32).to(device)
+    X_test_torch = torch.tensor(X_test, dtype=torch.float32).to(device)
+    ytest_torch = torch.tensor(ytest, dtype=torch.float32).to(device)
 
     # Define loss function and optimizer
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Training the model
-    for epoch in range(num_epochs):
-        model.train()
-        outputs = model(X_train_torch)
-        optimizer.zero_grad()
-
-        # Calculate the loss
-        loss = criterion(outputs, y_train_torch.unsqueeze(1))
-        loss.backward()
-        optimizer.step()
+    for epoch in range(num_epochs): 
+        model.train() 
+        optimizer.zero_grad() 
+        for i in range(0, len(X_train_torch), batch_size): 
+            X_batch = X_train_torch[i:i + batch_size] 
+            y_batch = y_train_torch[i:i + batch_size]
+            outputs = model(X_batch) 
+            loss = criterion(outputs, y_batch.unsqueeze(1)) 
+            loss = loss / accumulation_steps # Normalize loss 
+            loss.backward() 
+            if (i // batch_size) % accumulation_steps == 0:
+                optimizer.step()
+                optimizer.zero_grad()
 
     # Evaluate the model on the test data
     model.eval()
@@ -104,15 +115,17 @@ def objective(trial, X_train, y_train, X_test, ytest):
 
 
 @st.cache_resource
-def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=10, learning_rate=0.001):
-    # Initialize the LSTM model
-    model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout)
+def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=5, learning_rate=0.001):
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
+    st.write(f"Using device: {device}")
+    model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout).to(device)
 
     # Convert numpy arrays to PyTorch tensors
-    X_train_torch = torch.tensor(X_train, dtype=torch.float32)
-    y_train_torch = torch.tensor(y_train, dtype=torch.float32)
-    X_test_torch = torch.tensor(X_test, dtype=torch.float32)
-    ytest_torch = torch.tensor(ytest, dtype=torch.float32)
+    X_train_torch = torch.tensor(X_train, dtype=torch.float32).to(device)
+    y_train_torch = torch.tensor(y_train, dtype=torch.float32).to(device)
+    X_test_torch = torch.tensor(X_test, dtype=torch.float32).to(device)
+    ytest_torch = torch.tensor(ytest, dtype=torch.float32).to(device)
 
     # Define loss function and optimizer
     criterion = nn.MSELoss()
@@ -141,7 +154,7 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim
     st.write(f'Test Loss: {test_loss.item():.4f}')
 
     # Calculate RMSE
-    rmse_lstm = math.sqrt(mean_squared_error(ytest, test_outputs.detach().numpy()))
+    rmse_lstm = math.sqrt(mean_squared_error(ytest, test_outputs.cpu().detach().numpy()))
     st.metric("RMSE of the LSTM Model", f"{rmse_lstm:.4f}")
 
     return model, test_outputs, rmse_lstm
@@ -156,8 +169,7 @@ if uploaded_data is not None:
     st.subheader("Choose the algorithm")
     model_name = st.selectbox(
         "Select the ML Model", ["LSTM"]
-    )  # Only show feature engineering settings if XGBoost is selected
-
+    )  
 
     if st.button("Start Forecasting"):
         n = 100 
