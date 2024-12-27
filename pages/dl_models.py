@@ -7,7 +7,6 @@ import numpy as np
 
 from app import *
 
-
 st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
@@ -21,8 +20,8 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
-        h0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim).to(x.device)
-        c0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim).to(x.device)
+        h0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim)
+        c0 = torch.zeros(self.n_layers, x.size(0), self.hidden_dim)
 
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])

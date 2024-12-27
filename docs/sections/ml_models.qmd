@@ -1,6 +1,6 @@
 # Machine Learning Models
 
-Our stock prediction tool utilizes machine learning techniques to analyze and forecast time series data. Currently, we onl support  XGBoost, a powerful and efficient algorithm for handling complex time series data. 
+Our stock prediction tool utilizes machine learning techniques to analyze and forecast time series data. Currently, we only support  XGBoost but we are planning to add more in the upcoming versions. 
 
 ## XGBoost Model Overview
 
