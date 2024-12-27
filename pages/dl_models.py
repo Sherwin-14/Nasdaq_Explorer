@@ -7,11 +7,6 @@ import numpy as np
 from app import *
 from sklearn.preprocessing import MinMaxScaler
 
-
-st.title("Forecasting with DL Models")
-
-uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
-
 class LSTMModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, n_layers, dropout):
         super(LSTMModel, self).__init__()
@@ -58,6 +53,11 @@ def preprocess_data(df, time_step): # Scale the data
     return X_train, y_train, X_test, ytest
 
 
+st.title("Forecasting with DL Models")
+
+uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
+
+
 if uploaded_data is not None:
     #data = load_data(uplodaded_data)
     st.subheader("Choose the algorithm")
@@ -66,8 +66,27 @@ if uploaded_data is not None:
     )  # Only show feature engineering settings if XGBoost is selected
 
 
-#if st.button("Start Forecasting"):
-        #X, y = preprocess_data(data)
+if st.button("Start Forecasting"):
+    n = 100 
+    df = load_data(uploaded_data)
+    df1 = df.reset_index()['Close']
+    X_train, y_train, X_test, ytest, scaler = preprocess_data(df1, n)
+
+    st.write("LSTM model data preprocessing complete.") 
+    st.write("X_train shape:", X_train.shape) 
+    st.write("y_train shape:", y_train.shape) 
+    st.write("X_test shape:", X_test.shape) 
+    st.write("ytest shape:", ytest.shape)
+
+    input_dim = 1 
+    hidden_dim = 50 
+    output_dim = 1 
+    n_layers = 2 
+    dropout = 0.2 
+    model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout) 
+    
+    st.write("LSTM model created.") 
+    st.write(model)
         #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
         #st.subheader("Feature Importance")
         #plot_feature_importance(model, X.columns)
