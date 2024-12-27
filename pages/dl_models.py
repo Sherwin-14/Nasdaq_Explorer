@@ -43,10 +43,16 @@ def create_dataset(dataset, time_step=1):
 
 def preprocess_data(df, time_step): # Scale the data 
     scaler = MinMaxScaler(feature_range=(0, 1))
-    df1 = scaler.fit_transform(np.array(df).reshape(-1, 1)) # Splitting dataset into train and test 
+    df1 = scaler.fit_transform(np.array(df).reshape(-1, 1))
+
+    if np.isnan(df1).any(): 
+        st.write("Scaled data contains NaN values.") 
+        df1 = np.nan_to_num(df1)
+
     training_size = int(len(df1) * 0.80) 
     test_size = len(df1) - training_size 
     train_data, test_data = df1[0:training_size, :], df1[training_size:len(df1), :1] # Create dataset for LSTM 
+
     X_train, y_train = create_dataset(train_data, time_step) 
     X_test, ytest = create_dataset(test_data, time_step) # Reshape input to be [samples, time steps, features] which is required for LSTM 
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1) 
