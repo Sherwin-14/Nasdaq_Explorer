@@ -120,6 +120,8 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
     model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout).to(device)
 
+    torch.cuda.empty_cache()
+
     # Convert numpy arrays to PyTorch tensors
     X_train_torch = torch.tensor(X_train, dtype=torch.float32).to(device)
     y_train_torch = torch.tensor(y_train, dtype=torch.float32).to(device)
@@ -158,6 +160,33 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, 
 
     return model, test_outputs, rmse_lstm
 
+
+def predict_next_days(model, scaler, last_n_data, n_steps=10,  days_to_predict=7):
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
+    x_input = last_n_data.reshape(1, -1)
+    temp_input = x_input.flatten().tolist()  
+
+    lst_output = []
+    i = 0
+    while i < days_to_predict:
+        if len(temp_input) > n_steps:
+            x_input = np.array(temp_input[-n_steps:])  
+            x_input = x_input.reshape(1, n_steps, 1) 
+            x_input_tensor = torch.tensor(x_input, dtype=torch.float32).to(device)
+
+            with torch.no_grad(): 
+                 yhat = model(x_input_tensor)  # Make prediction
+                 yhat = yhat.cpu().numpy()
+                 temp_input.extend(yhat[0].tolist())
+                 lst_output.extend(yhat.tolist())
+                 i += 1
+
+    # Inverse transform the predictions
+    lst_output = scaler.inverse_transform(np.array(lst_output).reshape(-1, 1)).flatten().tolist()
+    
+    return lst_output
+
 st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
@@ -182,6 +211,9 @@ if uploaded_data is not None:
         best_params = study.best_params
         model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'])
         st.write(rmse_lstm)
+        last_n_data = X_test[len(X_test) - n:]  
+        predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
+        print(predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
