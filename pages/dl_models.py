@@ -10,6 +10,8 @@ from app import *
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
+from torch.utils.data import DataLoader, TensorDataset
+
 
 class LSTMModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, n_layers, dropout):
@@ -67,15 +69,13 @@ def objective(trial, X_train, y_train, X_test, ytest):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     torch.cuda.empty_cache()
-
-    print(torch.cuda.memory_summary(device=None, abbreviated=False))
     # Suggest hyperparameters
     input_dim = 1
     hidden_dim = trial.suggest_int('hidden_dim', 32, 128)
     n_layers = trial.suggest_int('n_layers', 1, 3)
     dropout = trial.suggest_float('dropout', 0.1, 0.5)
     learning_rate = trial.suggest_loguniform('learning_rate', 1e-5, 1e-1)
-    batch_size = 16 # Adjust as needed 
+    batch_size = 8 # Adjust as needed 
     accumulation_steps = 4
     num_epochs = 5
 
@@ -116,7 +116,7 @@ def objective(trial, X_train, y_train, X_test, ytest):
 
 
 @st.cache_resource
-def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, output_dim, n_layers, dropout, num_epochs, learning_rate):
+def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, output_dim, n_layers, dropout, num_epochs, learning_rate, batch_size):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
     model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout).to(device)
@@ -129,6 +129,9 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, 
     X_test_torch = torch.tensor(X_test, dtype=torch.float32).to(device)
     ytest_torch = torch.tensor(ytest, dtype=torch.float32).to(device)
 
+    train_dataset = TensorDataset(X_train_torch, y_train_torch.unsqueeze(1))
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
     # Define loss function and optimizer
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -136,13 +139,12 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, 
     # Training the model
     for epoch in range(num_epochs):
         model.train()
-        outputs = model(X_train_torch)
-        optimizer.zero_grad()
-
-        # Calculate the loss
-        loss = criterion(outputs, y_train_torch.unsqueeze(1))
-        loss.backward()
-        optimizer.step()
+        for batch_X, batch_y in train_loader:
+            optimizer.zero_grad()
+            outputs = model(batch_X)
+            loss = criterion(outputs, batch_y)
+            loss.backward()
+            optimizer.step()
 
         if (epoch + 1) % 1 == 0:
             st.write(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
@@ -237,14 +239,18 @@ if uploaded_data is not None:
         st.write("Best RMSE:", study.best_value)
         st.write("Best Parameters:", study.best_params)
         best_params = study.best_params
-        model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'])
+        model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'],batch_size = 16 )
         st.write(rmse_lstm)
         last_n_data = X_test[len(X_test) - n:]  
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
         print(predictions)
-        history = X_train
-        test = X_test
-        plot_results(history, test, predictions)
+        split_ratio = 0.8
+        split_index = int(len(df1) * split_ratio)
+
+        # Split the dataset
+        original_history = df1[:split_index] 
+        original_test = df1[split_index:]
+        plot_results(original_history, original_test, predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
