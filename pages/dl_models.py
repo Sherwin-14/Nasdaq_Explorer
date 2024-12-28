@@ -115,10 +115,9 @@ def objective(trial, X_train, y_train, X_test, ytest):
 
 
 @st.cache_resource
-def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=50, output_dim=1, n_layers=2, dropout=0.2, num_epochs=5, learning_rate=0.001):
+def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, output_dim, n_layers, dropout, num_epochs, learning_rate):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
-    st.write(f"Using device: {device}")
     model = LSTMModel(input_dim, hidden_dim, output_dim, n_layers, dropout).to(device)
 
     # Convert numpy arrays to PyTorch tensors
@@ -176,18 +175,13 @@ if uploaded_data is not None:
         df = load_data(uploaded_data)
         df1 = df.reset_index()['Close']
         X_train, y_train, X_test, ytest, scaler = preprocess_data(df1, n)
-
-        st.write("LSTM model data preprocessing complete.") 
-        st.write("X_train shape:", X_train.shape) 
-        st.write("y_train shape:", y_train.shape) 
-        st.write("X_test shape:", X_test.shape) 
-        st.write("ytest shape:", ytest.shape)
-
         study = optuna.create_study(direction='minimize')
         study.optimize(lambda trial: objective(trial, X_train, y_train, X_test, ytest), n_trials=50) 
-        st.write("Optimization complete.") 
         st.write("Best RMSE:", study.best_value)
         st.write("Best Parameters:", study.best_params)
+        best_params = study.best_params
+        model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'])
+        st.write(rmse_lstm)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
