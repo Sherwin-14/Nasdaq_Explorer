@@ -196,7 +196,7 @@ if uploaded_data is not None:
     #data = load_data(uplodaded_data)
     st.subheader("Choose the algorithm")
     model_name = st.selectbox(
-        "Select the ML Model", ["LSTM"]
+        "Select the DL Model", ["LSTM"]
     )  
 
     if st.button("Start Forecasting"):
