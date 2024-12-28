@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 import math
 import optuna
+import plotly.graph_objs as go
 
 from app import *
 from torch.utils.data import Dataset, DataLoader
@@ -187,6 +188,33 @@ def predict_next_days(model, scaler, last_n_data, n_steps=10,  days_to_predict=7
     
     return lst_output
 
+def plot_results(history, test, predictions):
+
+    fig = go.Figure()
+
+    # Add history data (in blue)
+    fig.add_trace(go.Scatter(x=list(range(len(history))), y=history, mode='lines', name='History', line=dict(color='blue')))
+
+    # Add test data (in black)
+    fig.add_trace(go.Scatter(x=list(range(len(history), len(history) + len(test))), y=test, mode='lines', name='Test', line=dict(color='black')))
+
+    # Add predictions for the next 7 days (in red)
+    fig.add_trace(go.Scatter(x=list(range(len(history) + len(test), len(history) + len(test) + 7)), y=predictions, mode='lines', name='Predictions', line=dict(color='red')))
+
+    # Update layout
+    fig.update_layout(title='History, Test, and Predictions',
+                      xaxis_title='Days',
+                      yaxis_title='Values',
+                      legend=dict(x=0, y=1))
+
+    # Show the plot in Streamlit
+    st.plotly_chart(fig)
+
+    # Display next 7-day predictions in Streamlit metric format
+    for i, prediction in enumerate(predictions):
+        st.metric(label=f'Day {i + 1} Prediction', value=prediction)
+
+
 st.title("Forecasting with DL Models")
 
 uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
@@ -214,6 +242,9 @@ if uploaded_data is not None:
         last_n_data = X_test[len(X_test) - n:]  
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
         print(predictions)
+        history = X_train
+        test = X_test
+        plot_results(history, test, predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
