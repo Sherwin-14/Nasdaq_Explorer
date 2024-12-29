@@ -50,7 +50,6 @@ def preprocess_data(df, time_step): # Scale the data
     df1 = scaler.fit_transform(np.array(df).reshape(-1, 1))
 
     if np.isnan(df1).any(): 
-        st.write("Scaled data contains NaN values.") 
         df1 = np.nan_to_num(df1)
 
     training_size = int(len(df1) * 0.80) 
@@ -146,20 +145,13 @@ def train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim, hidden_dim, 
             loss.backward()
             optimizer.step()
 
-        if (epoch + 1) % 1 == 0:
-            st.write(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
-
-    st.write("Model training complete.")
-
     # Evaluate the model on the test data
     model.eval()
     test_outputs = model(X_test_torch)
     test_loss = criterion(test_outputs, ytest_torch.unsqueeze(1))
-    st.write(f'Test Loss: {test_loss.item():.4f}')
 
     # Calculate RMSE
     rmse_lstm = math.sqrt(mean_squared_error(ytest, test_outputs.cpu().detach().numpy()))
-    st.metric("RMSE of the LSTM Model", f"{rmse_lstm:.4f}")
 
     return model, test_outputs, rmse_lstm
 
@@ -190,31 +182,42 @@ def predict_next_days(model, scaler, last_n_data, n_steps=10,  days_to_predict=7
     
     return lst_output
 
-def plot_results(history, test, predictions):
+
+def plot_results(df1, predictions):
+
+    if isinstance(df1, pd.Series):
+        df1 = df1.reset_index()  
+        df1.columns = ['Date', 'Close']
+    else:
+        # Strip whitespace from column names
+        df1.columns = df1.columns.str.strip()
+    
+    history = df1['Close'].tolist() 
+    dates = df1['Date'].tolist()
 
     fig = go.Figure()
 
-    # Add history data (in blue)
-    fig.add_trace(go.Scatter(x=list(range(len(history))), y=history, mode='lines', name='History', line=dict(color='blue')))
+    # Add a single blue line for historical performance
+    fig.add_trace(go.Scatter(x=dates, y=history, mode='lines', name='Historical Performance', line=dict(color='blue')))
 
-    # Add test data (in black)
-    fig.add_trace(go.Scatter(x=list(range(len(history), len(history) + len(test))), y=test, mode='lines', name='Test', line=dict(color='black')))
+    # Add predictions as red dots for the next 7 days
+    future_dates = pd.date_range(start=dates[-1], periods=8, freq='D')[1:]  # Generate future dates
+    fig.add_trace(go.Scatter(x=future_dates, y=predictions, mode='markers', name='Predictions', marker=dict(color='red', size=10)))
 
-    # Add predictions for the next 7 days (in red)
-    fig.add_trace(go.Scatter(x=list(range(len(history) + len(test), len(history) + len(test) + 7)), y=predictions, mode='lines', name='Predictions', line=dict(color='red')))
+    # Update layout with increased height and date formatting
+    fig.update_layout(title='Stock Performance and Predictions',
+                      xaxis_title='Date',
+                      yaxis_title='Stock Price',
+                      legend=dict(x=0, y=1),
+                      height=600)  # Increase the height of the graph
 
-    # Update layout
-    fig.update_layout(title='History, Test, and Predictions',
-                      xaxis_title='Days',
-                      yaxis_title='Values',
-                      legend=dict(x=0, y=1))
+    # Format x-axis to show dates properly
+    fig.update_xaxes(tickformat="%Y-%m-%d")  # Format the x-axis ticks as dates
 
     # Show the plot in Streamlit
     st.plotly_chart(fig)
 
     # Display next 7-day predictions in Streamlit metric format
-    for i, prediction in enumerate(predictions):
-        st.metric(label=f'Day {i + 1} Prediction', value=prediction)
 
 
 st.title("Forecasting with DL Models")
@@ -236,21 +239,22 @@ if uploaded_data is not None:
         X_train, y_train, X_test, ytest, scaler = preprocess_data(df1, n)
         study = optuna.create_study(direction='minimize')
         study.optimize(lambda trial: objective(trial, X_train, y_train, X_test, ytest), n_trials=50) 
-        st.write("Best RMSE:", study.best_value)
-        st.write("Best Parameters:", study.best_params)
+
+        col1 , col2 = st.columns(2)
+
+        with col1:
+            st.metric("Best RMSE:", study.best_value)
+
+        with col2:
+            st.write("Best Parameters:", study.best_params)
         best_params = study.best_params
         model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'],batch_size = 16 )
-        st.write(rmse_lstm)
         last_n_data = X_test[len(X_test) - n:]  
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
         print(predictions)
-        split_ratio = 0.8
-        split_index = int(len(df1) * split_ratio)
-
-        # Split the dataset
-        original_history = df1[:split_index] 
-        original_test = df1[split_index:]
-        plot_results(original_history, original_test, predictions)
+        for i, prediction in enumerate(predictions):
+            st.metric(label=f'Day {i + 1} Prediction', value=prediction)
+        plot_results(df1,predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
