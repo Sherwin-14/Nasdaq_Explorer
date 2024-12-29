@@ -243,7 +243,7 @@ if uploaded_data is not None:
         col1 , col2 = st.columns(2)
 
         with col1:
-            st.metric("Best RMSE:", round(study.best_value,2))
+            st.metric("Best RMSE:", round(study.best_value,4))
 
         with col2:
             st.write("Best Parameters:", study.best_params)
@@ -253,7 +253,7 @@ if uploaded_data is not None:
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
         print(predictions)
         for i, prediction in enumerate(predictions):
-            st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,2))
+            st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
         plot_results(df1,predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
