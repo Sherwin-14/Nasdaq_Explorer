@@ -203,8 +203,7 @@ def plot_results(df1, predictions):
     fig.add_trace(go.Scatter(x=future_dates, y=future_values, mode='lines+markers', name='Predictions', line=dict(color='red')))
 
     # Update layout with increased height and date formatting
-    fig.update_layout(title='Stock Performance and Predictions',
-                      xaxis_title='Date',
+    fig.update_layout(xaxis_title='Date',
                       yaxis_title='Stock Price',
                       legend=dict(x=0, y=1),
                       height=600,
