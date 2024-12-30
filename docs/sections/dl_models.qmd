@@ -1,3 +1,7 @@
 # Deep Learning Models
 
 Our stock prediction tool has a section for deep learning techniques to analyze and forecast time series data. Currently, we only support LSTM but we are planning to add more algorithms in the upcoming versions. 
+
+## LSTM Model Overview
+
+Our LSTM model is powerful and  well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:
