@@ -25,7 +25,7 @@
     "href": "sections/dl_models.html",
     "title": "Deep Learning Models",
     "section": "",
-    "text": "Our stock prediction tool has a section for deep learning techniques to analyze and forecast time series data. Currently, we only support LSTM but we are planning to add more algorithms in the upcoming versions.\n\n\nOur LSTM model is powerful and well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do. The data is internally scaled and transformed and then model is built with the ideal set of parameters.\n\n\n\n\nLoad the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will se the next 7 day forecast printed in metric format."
+    "text": "Our stock prediction tool has a section for deep learning techniques to analyze and forecast time series data. Currently, we only support LSTM but we are planning to add more algorithms in the upcoming versions.\n\n\nOur LSTM model is powerful and well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do. The data is internally scaled and transformed and then model is built with the ideal set of parameters.\n\n\n\n\nLoad the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training, rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will see the next 7 day forecast printed in metric format."
   },
   {
     "objectID": "sections/dl_models.html#lstm-model-overview",
@@ -39,7 +39,7 @@
     "href": "sections/dl_models.html#training-and-forecasting-using-dl-models",
     "title": "Deep Learning Models",
     "section": "",
-    "text": "Load the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will se the next 7 day forecast printed in metric format."
+    "text": "Load the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training, rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will see the next 7 day forecast printed in metric format."
   },
   {
     "objectID": "sections/fb_prophet.html",

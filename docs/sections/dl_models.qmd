@@ -12,8 +12,8 @@ Our LSTM model is powerful and  well-suited for handling complex time series dat
 
 2. Choose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.
 
-3. After training rmse and best model parameters would be displayed.
+3. After training, rmse and best model parameters would be displayed.
 
 4. A graph will be generated showing the history of the stock and the predictions for the next 7 days.
 
-5. Below the graph you will se the next 7 day forecast printed in metric format.
+5. Below the graph you will see the next 7 day forecast printed in metric format.
