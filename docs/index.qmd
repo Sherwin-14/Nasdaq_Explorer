@@ -20,9 +20,6 @@ Please do your own research and consult with a financial advisor before making a
 **Use at your own risk**
 :::
 
-
-
-
 ### What can you do with this app?
 
 ⇛ **Predict closing prices** : Use our tool to predict the closing prices of your favorite stocks based on historical data.

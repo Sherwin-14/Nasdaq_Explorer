@@ -23,10 +23,7 @@ pages = {
         st.Page("pages/dl_models.py", title="Deep Learning Models", icon="📋"),
         # st.Page("pages/suggested_items_analysis.py",title="Requested Items Analysis",icon="📋"),
         # st.Page("pages/rfm_model.py", title="Customer Segmentation Model", icon="👥"),
-    ],
-    "About Me": [
-        # st.Page("pages/doc_redirection_page.py", title="Docs", icon="📘"),
-    ],
+    ]
 }
 
 pg = st.navigation(pages)
