@@ -191,17 +191,16 @@ def plot_results(df1, predictions):
     combined_df = pd.concat([df1, predictions_df], ignore_index=True)
     print(df1.head(5))
     
-    history = combined_df['Close'].tolist() 
-    dates = combined_df['Date'].tolist()
+    history_values = combined_df['Close'].tolist() 
+    history_dates = combined_df['Date'].tolist()
+    future_dates = predictions_df['Date'].tolist()
+    future_values = predictions_df['Close'].tolist()
 
     fig = go.Figure()
 
-    # Add a single blue line for historical performance
-    fig.add_trace(go.Scatter(x=dates, y=history, mode='lines', name='Historical Performance', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(x=history_dates, y=history_values, mode='lines', name='Historical Performance', line=dict(color='blue')))
 
-    # Add predictions as red dots for the next 7 days
-    future_dates = pd.date_range(start=dates[-1], periods=8, freq='D')[1:]  # Generate future dates
-    fig.add_trace(go.Scatter(x=future_dates, y=predictions, mode='markers', name='Predictions', marker=dict(color='red', size=10)))
+    fig.add_trace(go.Scatter(x=future_dates, y=future_values, mode='lines+markers', name='Predictions', line=dict(color='red')))
 
     # Update layout with increased height and date formatting
     fig.update_layout(title='Stock Performance and Predictions',
@@ -223,7 +222,7 @@ def plot_results(df1, predictions):
 
 st.title("Forecasting with DL Models")
 
-uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="40")
+uploaded_data = st.file_uploader("Choose a CSV File", type="csv", key="89")
 
 
 if uploaded_data is not None:
