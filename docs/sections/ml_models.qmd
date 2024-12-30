@@ -4,7 +4,7 @@ Our stock prediction tool has a section for machine learning techniques to analy
 
 ## XGBoost Model Overview
 
-Our XGBoost model is a powerful and efficient algorithm that is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:
+Our XGBoost model is a powerful and is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:
 
 ☞ Simple Moving Averages (SMA): 5, 10, 15, 30
 
