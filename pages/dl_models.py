@@ -254,6 +254,7 @@ if uploaded_data is not None:
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
         st.subheader("Model Performance and Future Forecast")
         plot_results(df,predictions)
+        st.subheader("Next 7 Day Forecast")
         for i, prediction in enumerate(predictions):
             st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
