@@ -185,10 +185,14 @@ def predict_next_days(model, scaler, last_n_data, n_steps=10,  days_to_predict=7
 
 def plot_results(df1, predictions):
 
+    future_dates = pd.date_range(start=df1['Date'].iloc[-1] + pd.Timedelta(days=1), periods=7)
+    predictions_df = pd.DataFrame({'Date': future_dates, 'Close': predictions})
+
+    combined_df = pd.concat([df1, predictions_df], ignore_index=True)
     print(df1.head(5))
     
-    history = df1['Close'].tolist() 
-    dates = df1['Date'].tolist()
+    history = combined_df['Close'].tolist() 
+    dates = combined_df['Date'].tolist()
 
     fig = go.Figure()
 
@@ -204,7 +208,9 @@ def plot_results(df1, predictions):
                       xaxis_title='Date',
                       yaxis_title='Stock Price',
                       legend=dict(x=0, y=1),
-                      height=600)  # Increase the height of the graph
+                      height=600,
+                      xaxis=dict(showgrid=False),
+                      yaxis=dict(showgrid=False))  # Increase the height of the graph
 
     # Format x-axis to show dates properly
     fig.update_xaxes(tickformat="%Y-%m-%d")  # Format the x-axis ticks as dates
