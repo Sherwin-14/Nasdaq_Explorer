@@ -16,4 +16,4 @@ Our LSTM model is powerful and  well-suited for handling complex time series dat
 
 4. A graph will be generated showing the history of the stock and the predictions for the next 7 days.
 
-5. Below the graph you will se the next 7 day forecast printed in metric format
+5. Below the graph you will se the next 7 day forecast printed in metric format.

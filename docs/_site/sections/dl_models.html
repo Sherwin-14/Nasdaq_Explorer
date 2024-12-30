@@ -70,8 +70,10 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="Nasdaq Explorer">
+<meta property="og:description" content="">
 <meta property="og:site_name" content="Nasdaq Explorer">
 <meta name="twitter:title" content="Nasdaq Explorer">
+<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -141,8 +143,26 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="deep-learning-models" class="level1">
+<h1>Deep Learning Models</h1>
+<p>Our stock prediction tool has a section for deep learning techniques to analyze and forecast time series data. Currently, we only support LSTM but we are planning to add more algorithms in the upcoming versions.</p>
+<section id="lstm-model-overview" class="level2">
+<h2 class="anchored" data-anchor-id="lstm-model-overview">LSTM Model Overview</h2>
+<p>Our LSTM model is powerful and well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do. The data is internally scaled and transformed and then model is built with the ideal set of parameters.</p>
+</section>
+<section id="training-and-forecasting-using-dl-models" class="level2">
+<h2 class="anchored" data-anchor-id="training-and-forecasting-using-dl-models">Training and Forecasting using DL Models</h2>
+<ol type="1">
+<li><p>Load the stationarized dataset.</p></li>
+<li><p>Choose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.</p></li>
+<li><p>After training rmse and best model parameters would be displayed.</p></li>
+<li><p>A graph will be generated showing the history of the stock and the predictions for the next 7 days.</p></li>
+<li><p>Below the graph you will se the next 7 day forecast printed in metric format.</p></li>
+</ol>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
