@@ -185,12 +185,7 @@ def predict_next_days(model, scaler, last_n_data, n_steps=10,  days_to_predict=7
 
 def plot_results(df1, predictions):
 
-    if isinstance(df1, pd.Series):
-        df1 = df1.reset_index()  
-        df1.columns = ['Date', 'Close']
-    else:
-        # Strip whitespace from column names
-        df1.columns = df1.columns.str.strip()
+    print(df1.head(5))
     
     history = df1['Close'].tolist() 
     dates = df1['Date'].tolist()
@@ -254,7 +249,7 @@ if uploaded_data is not None:
         print(predictions)
         for i, prediction in enumerate(predictions):
             st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
-        plot_results(df1,predictions)
+        plot_results(df,predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
