@@ -252,10 +252,10 @@ if uploaded_data is not None:
         model, test_outputs, rmse_lstm = train_and_test_lstm(X_train, y_train, X_test, ytest, input_dim=1, hidden_dim=best_params['hidden_dim'], output_dim=1, n_layers=best_params['n_layers'], dropout=best_params['dropout'], num_epochs=5, learning_rate=best_params['learning_rate'],batch_size = 16 )
         last_n_data = X_test[len(X_test) - n:]  
         predictions = predict_next_days(model, scaler, last_n_data, n_steps=n, days_to_predict=7)
-        print(predictions)
+        st.subheader("Model Performance and Future Forecast")
+        plot_results(df,predictions)
         for i, prediction in enumerate(predictions):
             st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
-        plot_results(df,predictions)
             #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
             #st.subheader("Feature Importance")
             #plot_feature_importance(model, X.columns)
