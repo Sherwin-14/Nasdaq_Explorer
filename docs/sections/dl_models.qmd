@@ -4,4 +4,6 @@ Our stock prediction tool has a section for deep learning techniques to analyze 
 
 ## LSTM Model Overview
 
-Our LSTM model is powerful and  well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:
+Our LSTM model is powerful and  well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do.
+
+## Training and Forecasting using DL Models
