@@ -45,8 +45,6 @@ with tab1:
 
         df.rename(columns={"index": "Date"}, inplace=True)
 
-        print(df.tail(5))
-
         # Convert index to datetime
         df["Date"] = pd.to_datetime(df["Date"])
 
@@ -212,7 +210,6 @@ with tab3:
             result = adfuller(clean_df["Adj Close"], autolag="AIC")
             statistic, p_value, used_lag, n_obs, critical_values, icbest = result
             diff_count = 0
-            print(p_value)
             while p_value > 0.05:
                 st.warning(
                     f"The series is not stationary after {diff_count} differences. Making it stationary..."

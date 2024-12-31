@@ -34,7 +34,6 @@ if uplodaded_data is not None:
         m.fit(train)
         future = m.make_future_dataframe(periods=period)
         forecast = m.predict(future)
-        print(forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]])
         model_bytes = pickle.dumps(m)
     except Exception as e:
         st.write(f"Error: {e}")

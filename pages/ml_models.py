@@ -126,7 +126,6 @@ def objective(trial, X_train, y_train, X_test, y_test, model_name):
 
 @st.cache_resource
 def train_and_forecast(X, y, model_name, data):
-    print(X.isna().sum(), y)
 
     original_dates = data["Date"]
 

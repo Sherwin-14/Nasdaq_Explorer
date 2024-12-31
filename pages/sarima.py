@@ -85,8 +85,6 @@ with tab1:
         if st.session_state.pdqs_values is not None:
             (p, d, q, P, D, Q, s) = st.session_state.pdqs_values
 
-        print(P, D, Q, s)
-
 with tab2:
     if st.session_state.pdqs_values is not None:
         p, d, q, P, D, Q, S = st.session_state.pdqs_values
@@ -119,7 +117,6 @@ with tab2:
                 train = df[:train_size]
                 test = df[train_size:]
 
-                print(p, d, q, P, D, Q, s)
 
                 def sarima_modelling(train, test):
                     history = [x for x in train]
@@ -154,7 +151,6 @@ with tab2:
                     mean_squared_error(test, onlypreds[0 : len(test)])
                 )
 
-                print(error_arima)
 
                 x = np.append(train, onlypreds)
                 pre = pd.DataFrame(x, columns=["ARIMA"])
@@ -175,8 +171,6 @@ with tab2:
 
                 # Create a new dataframe that contains both the history and predicted values
                 combined_df = pd.concat([df, new_df], ignore_index=True)
-
-                print(combined_df)
 
                 colors = [
                     "blue" if i < len(df) else "red" for i in range(len(combined_df))

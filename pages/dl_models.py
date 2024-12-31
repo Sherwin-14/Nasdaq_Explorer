@@ -189,7 +189,6 @@ def plot_results(df1, predictions):
     predictions_df = pd.DataFrame({'Date': future_dates, 'Close': predictions})
 
     combined_df = pd.concat([df1, predictions_df], ignore_index=True)
-    print(df1.head(5))
     
     history_values = combined_df['Close'].tolist() 
     history_dates = combined_df['Date'].tolist()
@@ -255,9 +254,3 @@ if uploaded_data is not None:
         st.subheader("Next 7 Day Forecast")
         for i, prediction in enumerate(predictions):
             st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
-            #predictions, rmse, model = train_and_forecast(X, y, model_name, data)
-            #st.subheader("Feature Importance")
-            #plot_feature_importance(model, X.columns)
-            # st.write(next_7_days_pred)
-            # forecast_df = pd.DataFrame({'Date': test_index, 'Actual': y_test, 'Forecast': predictions})
-        # st.write(forecast_df)
