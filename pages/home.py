@@ -1,12 +1,12 @@
 from app import *
 
 # Title and header
-st.title("Time Series Explorer")
+st.title("Nasdaq Explorer")
 st.header("Analyze and Forecast Time Series Data")
 
 # Introduction text
 st.write("""
-Time Series Explorer is a powerful tool for analyzing and forecasting time series data. With our app, you can easily explore your dataset, identify trends and patterns, and build accurate models to predict future values.
+Nasdaq Explorer is a powerful tool for analyzing and forecasting time series data. With our app, you can easily explore your dataset, identify trends and patterns, and build accurate models to predict future values.
 """)
 
 # Key features section
@@ -33,5 +33,5 @@ st.button("Get Started")
 
 # Optional: Add a link to a tutorial or documentation
 st.write(
-    "Need help getting started? Check out our [tutorial](https://example.com/tutorial) or [documentation](https://example.com/docs)"
+    "Need help getting started? Check out our [tutorial](https://example.com/tutorial) or [documentation](https://sherwin-14.github.io/Nasdaq_Explorer/)"
 )
