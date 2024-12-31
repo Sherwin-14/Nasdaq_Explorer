@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "sections/ml_models.html",
+    "href": "sections/ml_models.html",
+    "title": "Machine Learning Models",
+    "section": "",
+    "text": "Our stock prediction tool has a section for machine learning techniques to analyze and forecast time series data. Currently, we only support XGBoost but we are planning to add more algorithms in the upcoming versions.\n\n\nOur XGBoost model is a powerful and is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:\n☞ Simple Moving Averages (SMA): 5, 10, 15, 30\n☞ Exponential Moving Average (EMA): 9\n☞ Relative Strength Index (RSI): 14\n☞ Moving Average Convergence Divergence (MACD): 12, 26\nThese features are used to capture trends, momentum, and volatility in the time series data. The XGBoost model is trained to predict future values based on these features.\n\n\n\n\nLoad the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the training dataset, the test dataset, and the performance of the model on test dataset.\nA feature importance graph would also be generated at the end."
+  },
+  {
+    "objectID": "sections/ml_models.html#xgboost-model-overview",
+    "href": "sections/ml_models.html#xgboost-model-overview",
+    "title": "Machine Learning Models",
+    "section": "",
+    "text": "Our XGBoost model is a powerful and is well-suited for handling complex time series data. The model is trained on a combination of technical indicators and moving averages, including:\n☞ Simple Moving Averages (SMA): 5, 10, 15, 30\n☞ Exponential Moving Average (EMA): 9\n☞ Relative Strength Index (RSI): 14\n☞ Moving Average Convergence Divergence (MACD): 12, 26\nThese features are used to capture trends, momentum, and volatility in the time series data. The XGBoost model is trained to predict future values based on these features."
+  },
+  {
+    "objectID": "sections/ml_models.html#training-and-forecasting-using-ml-models",
+    "href": "sections/ml_models.html#training-and-forecasting-using-ml-models",
+    "title": "Machine Learning Models",
+    "section": "",
+    "text": "Load the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the training dataset, the test dataset, and the performance of the model on test dataset.\nA feature importance graph would also be generated at the end."
+  },
+  {
+    "objectID": "sections/dl_models.html",
+    "href": "sections/dl_models.html",
+    "title": "Deep Learning Models",
+    "section": "",
+    "text": "Our stock prediction tool has a section for deep learning techniques to analyze and forecast time series data. Currently, we only support LSTM but we are planning to add more algorithms in the upcoming versions.\n\n\nOur LSTM model is powerful and well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do. The data is internally scaled and transformed and then model is built with the ideal set of parameters.\n\n\n\n\nLoad the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training, rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will see the next 7 day forecast printed in metric format."
+  },
+  {
+    "objectID": "sections/dl_models.html#lstm-model-overview",
+    "href": "sections/dl_models.html#lstm-model-overview",
+    "title": "Deep Learning Models",
+    "section": "",
+    "text": "Our LSTM model is powerful and well-suited for handling complex time series data. Also it gives out the next 7 day forecast just like ARIMA and SARIMA models do. The data is internally scaled and transformed and then model is built with the ideal set of parameters."
+  },
+  {
+    "objectID": "sections/dl_models.html#training-and-forecasting-using-dl-models",
+    "href": "sections/dl_models.html#training-and-forecasting-using-dl-models",
+    "title": "Deep Learning Models",
+    "section": "",
+    "text": "Load the stationarized dataset.\nChoose the algorithm from the select bar and click on the Start Forecasting button to train the data using the selected algorithm.\nAfter training, rmse and best model parameters would be displayed.\nA graph will be generated showing the history of the stock and the predictions for the next 7 days.\nBelow the graph you will see the next 7 day forecast printed in metric format."
+  },
+  {
+    "objectID": "sections/fb_prophet.html",
+    "href": "sections/fb_prophet.html",
+    "title": "FB Prophet Modelling",
+    "section": "",
+    "text": "Note\n\n\n\nFacebook Prophet is a powerful tool for forecasting time series data, but it may not always be the best choice. It is particularly useful when you have a time series dataset with multiple seasonality and non-uniform periods."
+  },
+  {
+    "objectID": "sections/fb_prophet.html#training-and-forecasting-using-fb-prophet",
+    "href": "sections/fb_prophet.html#training-and-forecasting-using-fb-prophet",
+    "title": "FB Prophet Modelling",
+    "section": "Training and Forecasting using FB Prophet",
+    "text": "Training and Forecasting using FB Prophet\n\nLoad the dataset directly.\nClick on the Start Forecasting button to train the data on the Facebook Prophet model.\nUse the slider to adjust the forecast period, ranging from 1 year to 4 years.\nA master graph will be generated showing the forecasted values untill the choosen period.\nA couple of forecast components would also be displayed alongisde the master graph, namely Trend component graph, Seasonal component graph, Holiday component graph."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Predicting Stock Movements",
+    "section": "",
+    "text": "The tool uses the yfinance library to fetch historical stock market data, providing a comprehensive dataset for analysis and modeling. With this data, we can train models to predict closing prices. With a deep understanding of the data and its underlying dynamics, you can choose the right modeling approach for your needs. The tool provides a range of models, including ARIMA, SARIMA, FB Prophet and more. The model that you will get would be the ones built with ideal set of parameters."
+  },
+  {
+    "objectID": "index.html#get-started",
+    "href": "index.html#get-started",
+    "title": "Predicting Stock Movements",
+    "section": "Get started",
+    "text": "Get started\nTo get started, simply select a stock ticker symbol from the dropdown menu, and our app will fetch the historical data and provide you with a dataset which you can download and use further for your analysis.\nBefore deciding on the best modeling option for the data, you can perform several task (provided in the tool) to better understand the stock pattern and prepare the data for modeling."
+  },
+  {
+    "objectID": "index.html#data-analysis-and-preparation-for-modeling",
+    "href": "index.html#data-analysis-and-preparation-for-modeling",
+    "title": "Predicting Stock Movements",
+    "section": "Data Analysis and Preparation for Modeling",
+    "text": "Data Analysis and Preparation for Modeling\nThe following sections are designed to guide you through the process of understanding and preparing your stock data for modeling. By following these steps, you’ll be able to gain valuable insights into your data, identify trends and patterns, and ultimately choose the right modeling option for your analysis.\n\nAnalyze Your Data\nUpon selecting the ticker symbol, the dataset is loaded, and a series of necessary data validation checks are performed to ensure data integrity. This process involves replacing or deleting missing values, verifying data types, and other essential checks. Once the data validation is complete, a graphical representation of the dataset is generated to facilitate comparison of prices.\n\n\nTime Series Decomposition\nThis section focuses on decomposing the time series data into its constituent components, including trend, seasonality, and residuals. The method of decomposition is chosen based on the characteristics of the time series data. The goal is to identify and separate these components to better understand the underlying patterns and anomalies in the data.\n\n\nStationarity Check\nThe Stationarity tab is a crucial step in our analysis pipeline. Under the hood Augmented Dickey-Fuller (ADF) test is performed to check if the selected stock data is stationary.\nHow Does it Work?\nWhen a user selects a stock ticker symbol, our system internally performs an ADF test to check for stationarity. If the test indicates that the data is stationary, you can proceed with modeling. However, if the test suggests that the data is not stationary, you can download the stationarized data to ensure accurate results when modeling.\n\n\nACF and PACF Plots\nAfter checking for stationarity, you can proceed to analyze the autocorrelation structure of the data using Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots. The slider helps you choose no the of lags dynamically which can help you understand the data better.\nOnce you are done with analzying and stationarizing data then you can move forward choosing the right model for your data."
+  },
+  {
+    "objectID": "sections/arima.html",
+    "href": "sections/arima.html",
+    "title": "ARIMA Modeling",
+    "section": "",
+    "text": "Note\n\n\n\nThe ARIMA model is particularly well-suited for forecasting time series data with no strong seasonal patterns."
+  },
+  {
+    "objectID": "sections/arima.html#training-and-forecasting-with-arima",
+    "href": "sections/arima.html#training-and-forecasting-with-arima",
+    "title": "ARIMA Modeling",
+    "section": "Training and Forecasting with ARIMA",
+    "text": "Training and Forecasting with ARIMA\n\nLoad the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.\nClick on the Start Forecasting button to train the data on the ARIMA model.\nAfter clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days.\nA graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days.\nThe predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric."
+  },
+  {
+    "objectID": "sections/sarima.html",
+    "href": "sections/sarima.html",
+    "title": "SARIMA Modeling",
+    "section": "",
+    "text": "Note\n\n\n\nThe SARIMA model is particularly well-suited for forecasting time series data with strong seasonal patterns."
+  },
+  {
+    "objectID": "sections/sarima.html#training-and-forecasting-with-sarima",
+    "href": "sections/sarima.html#training-and-forecasting-with-sarima",
+    "title": "SARIMA Modeling",
+    "section": "Training and Forecasting with SARIMA",
+    "text": "Training and Forecasting with SARIMA\n\nLoad the stationarized dataset obtained either directly or by stationarizing it using the Stationarize tab in the Choose or Upload Data section.\nClick on the Start Forecasting button to train the data on the SARIMA model.\nAfter clicking on Start Forecasting, the model will be trained on the dataset and a forecast will be generated for the next 7 days, taking into account the seasonal patterns and trends in the data.\nA graph will be generated showing the history of the training dataset, the test dataset, and the predicted values for the next 7 days, highlighting the seasonal patterns and trends in the data.\nThe predicted values for the next 7 days will be displayed in the form of metrics, along with the Root Mean Squared Error (RMSE) value, which will be printed as a metric."
+  }
+]
