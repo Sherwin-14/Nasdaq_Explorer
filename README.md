@@ -6,4 +6,4 @@
 Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+Nasdaq Explorer © 2024 by Sherwin Varghese is licensed under CC BY-NC-SA 4.0. See the LICENSE file for details.
