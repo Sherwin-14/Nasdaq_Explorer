@@ -4,6 +4,39 @@
 
 <img src="https://github.com/Sherwin-14/Nasdaq_Explorer/blob/master/tour.gif?raw=true" alt="GIF" width="500" height="auto">
 
+## Setup Instructions
+
+To set up the environment for this project, follow these steps:
+
+### Prerequisites
+
+Make sure you have the following installed Python and Poetry in your local machine.
+
+### Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/Nasdaq_Explorer.git
+   cd Nasdaq_Explorer
+   ```
+   
+2. **Install Poetry**
+   ```bash
+   poetry install
+   ```
+   
+3. **Activate the Environment**
+   ```bash
+   poetry shell
+   ```
+ 
+4. **Run the application**
+   ```bash
+   streamlit run app.py
+   ```
+
+
+
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
 
