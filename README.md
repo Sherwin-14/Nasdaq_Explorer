@@ -25,17 +25,16 @@ Make sure you have the following installed Python and Poetry in your local machi
    poetry install
    ```
    
-3. **Activate the Environment**
+3. **Activate the Environment and run tests**
    ```bash
    poetry shell
+   find tests -name "*.py" -exec python3 {} \;
    ```
  
 4. **Run the application**
    ```bash
    streamlit run app.py
    ```
-
-
 
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
