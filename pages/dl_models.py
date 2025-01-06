@@ -5,8 +5,10 @@ import numpy as np
 import math
 import optuna
 import plotly.graph_objs as go
+import pickle
 
 from app import *
+from streamlit import download_button
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
@@ -254,3 +256,15 @@ if uploaded_data is not None:
         st.subheader("Next 7 Day Forecast")
         for i, prediction in enumerate(predictions):
             st.metric(label=f'Day {i + 1} Prediction', value= round(prediction,4))
+
+        model_file = "trained_model.pkl"
+        with open(model_file, "wb") as file:
+            pickle.dump(model, file)
+
+        with open(model_file, "rb") as file:
+            download_button(
+                label="Download Trained Model",
+                data=file,
+                file_name=model_file,
+                mime="application/octet-stream",
+            )
