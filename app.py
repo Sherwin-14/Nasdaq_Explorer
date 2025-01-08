@@ -16,11 +16,11 @@ pages = {
         st.Page("pages/intro.py", title="Choose Stock to analyze", icon="🤔"),
     ],
     "Resources": [
-        st.Page("pages/arima.py", title="ARIMA Modelling", icon="📊"),
-        st.Page("pages/prophet.py", title="Facebook Prophet Modelling", icon="🛍️"),
-        st.Page("pages/sarima.py", title="SARIMA Modelling", icon="💸"),
-        st.Page("pages/ml_models.py", title="Machine Learning Models", icon="⏰"),
-        st.Page("pages/dl_models.py", title="Deep Learning Models", icon="📋")
+        st.Page("pages/arima.py", title="ARIMA Modelling"),
+        st.Page("pages/prophet.py", title="Facebook Prophet Modelling"),
+        st.Page("pages/sarima.py", title="SARIMA Modelling"),
+        st.Page("pages/ml_models.py", title="Machine Learning Models"),
+        st.Page("pages/dl_models.py", title="Deep Learning Models")
     ]
 }
 
