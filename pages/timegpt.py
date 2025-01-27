@@ -33,7 +33,6 @@ def plot(data, forecast):
     fig =  nixtla_client.plot(data, forecast, level=[68, 80])
     return st.pyplot(fig)
 
-
 st.title("Forecasting with TimeGPT")
 
 uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="1")
@@ -41,10 +40,13 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="1")
 if uplodaded_data is not None:
     data = load_data(uplodaded_data)
 
-    if st.button("Start Forecasting"):
+    if st.button("Forecasting"):
         forecast  = forcasting(data)
         st.subheader("Model predictions For Next 7 Days")
-        st.dataframe(forecast[-7:], use_container_width=True)
+        next_7_days = forecast['TimeGPT'].iloc[-7:]
+        cols = st.columns(7)
+        for i, day in enumerate(next_7_days):
+            cols[i].metric(f"Day {i+1}", day)
         st.subheader("Model Performance")
         plot(data, forecast)
 
