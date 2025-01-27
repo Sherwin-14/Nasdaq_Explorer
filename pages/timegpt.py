@@ -1,11 +1,9 @@
 import math
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
 
 from nixtla import NixtlaClient
 from utilsforecast.preprocessing import fill_gaps
-
 
 API_KEY = 'nixak-WDui79ni2fTamFnvLBKw1lhPBkGPZXdgoWrZBzfzMo2nTC7qpL4paIFYaxpHsM41WDk7vUhyMeFyYFJf'
 
@@ -29,7 +27,6 @@ def forcasting(data):
 
 
 def plot(data, forecast):
-    plt.figure(figsize=(18, 8))
     fig =  nixtla_client.plot(data, forecast, level=[68, 80])
     return st.pyplot(fig)
 
