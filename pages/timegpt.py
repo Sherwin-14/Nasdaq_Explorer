@@ -40,7 +40,7 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="1")
 if uplodaded_data is not None:
     data = load_data(uplodaded_data)
 
-    if st.button("Forecasting"):
+    if st.button("Start Forecasting"):
         forecast  = forcasting(data)
         st.subheader("Model predictions For Next 7 Days")
         next_7_days = forecast['TimeGPT'].iloc[-7:]
