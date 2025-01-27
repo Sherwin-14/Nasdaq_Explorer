@@ -1,6 +1,7 @@
 import math
 import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
 
 from nixtla import NixtlaClient
 from utilsforecast.preprocessing import fill_gaps
@@ -23,12 +24,14 @@ def load_data(uploaded_file):
 
 @st.cache_resource
 def forcasting(data):
-    fcst_df = nixtla_client.forecast(data, h = 2, level=[68, 80], add_history=True)
+    fcst_df = nixtla_client.forecast(data, h = 7, level=[68, 80], add_history= True, freq = 'D')
     return fcst_df
 
 
 def plot(data, forecast):
-    return nixtla_client.plot(data, forecast, level=[80, 90])
+    plt.figure(figsize=(18, 8))
+    fig =  nixtla_client.plot(data, forecast, level=[68, 80])
+    return st.pyplot(fig)
 
 
 st.title("Forecasting with TimeGPT")
@@ -37,10 +40,13 @@ uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="1")
 
 if uplodaded_data is not None:
     data = load_data(uplodaded_data)
-    st.subheader("Choose the algorithm")
 
     if st.button("Start Forecasting"):
         forecast  = forcasting(data)
+        st.subheader("Model predictions For Next 7 Days")
+        st.dataframe(forecast[-7:], use_container_width=True)
+        st.subheader("Model Performance")
+        plot(data, forecast)
 
         
 
