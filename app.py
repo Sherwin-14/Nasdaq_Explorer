@@ -21,7 +21,7 @@ pages = {
         st.Page("pages/sarima.py", title="SARIMA Modelling", icon="💸"),
         st.Page("pages/ml_models.py", title="Machine Learning Models", icon="⏰"),
         st.Page("pages/dl_models.py", title="Deep Learning Models", icon="📋"),
-        st.Page("pages/timegpt_model.py", title = "Time GPT Forecasting")
+        st.Page("pages/timegpt.py", title = "Time GPT Forecasting")
     ]
 }
 
