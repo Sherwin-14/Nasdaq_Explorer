@@ -4,6 +4,10 @@ import streamlit as st
 
 from nixtla import NixtlaClient
 from utilsforecast.preprocessing import fill_gaps
+from sklearn.model_selection import train_test_split
+from utilsforecast.losses import rmse
+from utilsforecast.evaluation import evaluate
+
 
 API_KEY = 'nixak-WDui79ni2fTamFnvLBKw1lhPBkGPZXdgoWrZBzfzMo2nTC7qpL4paIFYaxpHsM41WDk7vUhyMeFyYFJf'
 
@@ -18,15 +22,25 @@ def load_data(uploaded_file):
     data = fill_gaps(data, freq = 'D')
     data['y'] = data['y'].interpolate(method='linear', limit_direction='both')
 
-    return data
+    train_df, test_df = train_test_split(data, test_size=0.2, random_state=42)
+    
+    return train_df, test_df
 
 @st.cache_resource
-def forcasting(data):
-    fcst_df = nixtla_client.forecast(data, h = 7, level=[68, 80], add_history= True, freq = 'D')
+def training(data, test):
+    fcst_df = nixtla_client.forecast(data, h = len(test), level=[68, 80], add_history= True, freq = 'D', finetune_steps=10, finetune_loss='rmse', id_col='unique_id')
+    print("Training Successful!")
     return fcst_df
 
 
-def plot(data, forecast):
+@st.cache_resource
+def error(test_df):
+    evaluation = evaluate(test_df, metrics=[rmse], models=["TimeGPT"], target_col="y", id_col='unique_id')
+    average_metrics = evaluation.groupby('metric')['TimeGPT'].mean()
+    return average_metrics
+
+
+def plot(test_df, forecast):
     fig =  nixtla_client.plot(data, forecast, level=[68, 80])
     return st.pyplot(fig)
 
@@ -35,17 +49,15 @@ st.title("Forecasting with TimeGPT")
 uplodaded_data = st.file_uploader("Choose a CSV file", type=["csv"], key="1")
 
 if uplodaded_data is not None:
-    data = load_data(uplodaded_data)
+    train_df, test_df = load_data(uplodaded_data)
 
     if st.button("Start Forecasting"):
-        forecast  = forcasting(data)
+        fcst_df  = training(train_df, test_df)
+        fcst_df['ds'] = pd.to_datetime(fcst_df['ds'])
+        test_df = pd.merge(test_df, fcst_df, 'left', ['unique_id', 'ds'])
+        rmse = error(test_df)
+        st.write("Best RMSE:",rmse)
         st.subheader("Model predictions For Next 7 Days")
-        next_7_days = forecast['TimeGPT'].iloc[-7:]
-        cols = st.columns(7)
-        for i, day in enumerate(next_7_days):
-            cols[i].metric(f"Day {i+1}", day)
-        st.subheader("Model Performance")
-        plot(data, forecast)
 
         
 
