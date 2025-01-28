@@ -19,11 +19,12 @@ def load_data(uploaded_file):
     data['unique_id'] = 'id1'
     data.rename(columns={"Date": "ds", "Close": "y"}, inplace = True)
     data = data[['unique_id', 'ds', 'y']]
-    data = fill_gaps(data, freq = 'D')
-    data['y'] = data['y'].interpolate(method='linear', limit_direction='both')
-
     train_df, test_df = train_test_split(data, test_size=0.2, random_state=42)
-    
+    train_df = fill_gaps(data, freq = 'D')
+    test_df = fill_gaps(data, freq = 'D')
+    train_df['y'] = train_df['y'].interpolate(method='linear', limit_direction='both')
+    test_df['y'] = test_df['y'].interpolate(method='linear', limit_direction='both')
+
     return train_df, test_df
 
 @st.cache_resource
