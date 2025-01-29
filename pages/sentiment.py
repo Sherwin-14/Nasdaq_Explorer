@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import httpx
 
-st.subheader("Stock sentiment For Choosen Stock")
+st.subheader("Sentiment Analysis For Stocks")
 
 headers = {
     'x-rapidapi-key': "0a609bffe5msh4a4878f4995debfp1fc4c7jsn8d445fe23afe",
