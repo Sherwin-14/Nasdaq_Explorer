@@ -25,6 +25,7 @@ statsmodels = "^0.14.4"
 scipy = "^1.14.1"
 yfinance = "^0.2.50"
 nixtla = "^0.6.6"
+httpx = "^0.28.1"
 
 
 [build-system]
