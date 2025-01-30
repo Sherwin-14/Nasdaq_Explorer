@@ -43,6 +43,7 @@ def error(test_df):
 @st.cache_resource
 def forecasting(test_df):
     fcst_df_7 = nixtla_client.forecast(test_df, h = 7, level=[68, 80], freq = 'D')
+    print(fcst_df_7)
     return fcst_df_7
 
 
@@ -64,6 +65,16 @@ if uplodaded_data is not None:
         rmse = error(test_df)
         st.write("Best RMSE:",rmse)
         st.subheader("Model predictions For Next 7 Days")
+        fcst_df_7 = forecasting(test_df)
+
+        cols = st.columns(len(fcst_df_7))
+
+        for i, (col, row) in enumerate(zip(cols, fcst_df_7.iterrows())):
+            with col:
+                st.metric(label=f"Day {i+1}", value=f"{row[1]['TimeGPT']:.2f}")
+        
+        st.subheader("Model Performance")
+        plot(test_df,fcst_df)
 
         
 
