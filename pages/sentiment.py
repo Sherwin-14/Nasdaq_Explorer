@@ -17,24 +17,33 @@ if stock is not None:
     if st.button("Get Sentiment"):
         url = f"https://stock-sentiment-api.p.rapidapi.com/avg_sentiment/?ticker={stock_dict[stock]}"
 
-        def get_stock_sentiment(stock):
+        @st.cache_resource
+        def get_stock_sentiment(url):
             response = httpx.get(url, headers=headers)
             data = response.json()
+            print(data)
             return data
-
+        
         @st.cache_resource
         def extract_and_classify_sentiment(data):
             avg_sentiment = data['avg_sentiment']
             sentiment_classification = None
             
-            if avg_sentiment > 0.5:
+            if avg_sentiment > 0.75:
+                sentiment_classification = "Strongly Positive"
+            elif avg_sentiment > 0.25:
                 sentiment_classification = "Positive"
-            elif avg_sentiment < -0.5:
+            elif avg_sentiment < -0.75:
+                sentiment_classification = "Strongly Negative"
+            elif avg_sentiment < -0.25:
                 sentiment_classification = "Negative"
             else:
                 sentiment_classification = "Neutral"
+
             
             return sentiment_classification
 
-        data = get_stock_sentiment(stock)
+        data = get_stock_sentiment(url)
         sentiment_classification = extract_and_classify_sentiment(data)
+        st.write(f"The sentiment classification for {stock} is: {sentiment_classification}")
+
