@@ -40,9 +40,14 @@ def error(test_df):
     average_metrics = evaluation.groupby('metric')['TimeGPT'].mean()
     return average_metrics
 
+@st.cache_resource
+def forecasting(test_df):
+    fcst_df_7 = nixtla_client.forecast(test_df, h = 7, level=[68, 80], freq = 'D')
+    return fcst_df_7
+
 
 def plot(test_df, forecast):
-    fig =  nixtla_client.plot(data, forecast, level=[68, 80])
+    fig =  nixtla_client.plot(test_df, forecast, level=[68, 80])
     return st.pyplot(fig)
 
 st.title("Forecasting with TimeGPT")
