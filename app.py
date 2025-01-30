@@ -14,6 +14,7 @@ pages = {
     "Home": [
         st.Page("pages/home.py", title="Home", icon="🔥"),
         st.Page("pages/intro.py", title="Choose Stock to analyze", icon="🤔"),
+        st.Page("pages/sentiment.py", title="Sentiment Analyzer", icon = "💬")
     ],
     "Resources": [
         st.Page("pages/arima.py", title="ARIMA Modelling"),
