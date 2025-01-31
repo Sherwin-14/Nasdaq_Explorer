@@ -12,7 +12,7 @@ To set up the environment for this project, follow these steps:
 
 Make sure you have the following installed Python and Poetry in your local machine.
 
-### 🏃‍♂️ Steps
+### Steps
 
 1. **Clone the repository**
    ```bash
