@@ -12,7 +12,7 @@ To set up the environment for this project, follow these steps:
 
 Make sure you have the following installed Python and Poetry in your local machine.
 
-### Steps
+### 🏃‍♂️ Steps
 
 1. **Clone the repository**
    ```bash
@@ -36,8 +36,8 @@ Make sure you have the following installed Python and Poetry in your local machi
    streamlit run app.py
    ```
 
-## Contributing
+## 🤝 Contributing
 Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
 
-## License
+## 📜 License
 Nasdaq Explorer © 2024 by Sherwin Varghese is licensed under CC BY-NC-SA 4.0. See the LICENSE file for details.
